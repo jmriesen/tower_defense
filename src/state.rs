@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use amethyst::{
     assets::{AssetStorage, Loader},
     core::transform::Transform,
@@ -5,15 +6,18 @@ use amethyst::{
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
     ui::{
-        Anchor, FontHandle, LineMode, Stretch, TtfFormat, UiButtonBuilder, UiImage, UiText,
+        Anchor, FontHandle, LineMode,  TtfFormat, UiImage, UiText,
         UiTransform,
     },
     window::ScreenDimensions,
+    shrev::{EventChannel},
 };
 
 use log::info;
+use super::enemy;
 
 /// A dummy game state that shows 3 sprites.
+#[derive(Default)]
 pub struct MyState;
 
 impl SimpleState for MyState {
@@ -41,7 +45,9 @@ impl SimpleState for MyState {
 
         // Load our sprites and display them
         let sprites = load_sprites(world);
-        init_sprites(world, &sprites, &dimensions);
+        world.insert(Some(super::enemy::EnemyFactory::new(sprites)));
+
+        //init_sprites(world, &sprites, &dimensions);
 
         create_ui_example(world);
     }
@@ -51,7 +57,7 @@ impl SimpleState for MyState {
     /// - Any other keypress is simply logged to the console.
     fn handle_event(
         &mut self,
-        mut _data: StateData<'_, GameData<'_, '_>>,
+        mut data: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> SimpleTrans {
         if let StateEvent::Window(event) = &event {
@@ -59,6 +65,12 @@ impl SimpleState for MyState {
             if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
                 return Trans::Quit;
             }
+
+            let world = data.world;
+            let mut temp = world.fetch_mut::<EventChannel<enemy::SpawnEvent>>();
+            temp.single_write(enemy::SpawnEvent);
+            //enemy_factory.spawn(world);
+
 
             // Listen to any key events
             if let Some(event) = get_key(&event) {
@@ -138,8 +150,8 @@ fn load_sprites(world: &mut World) -> Vec<SpriteRender> {
 fn init_sprites(world: &mut World, sprites: &[SpriteRender], dimensions: &ScreenDimensions) {
     for (i, sprite) in sprites.iter().enumerate() {
         // Center our sprites around the center of the window
-        let x = (i as f32 - 1.) * 100. + dimensions.width() * 0.5;
-        let y = (i as f32 - 1.) * 100. + dimensions.height() * 0.5;
+        let x = (i as f32 - 1.) * 200. + dimensions.width() * 0.5;
+        let y = (i as f32 - 1.) * 200. + dimensions.height() * 0.5;
         let mut transform = Transform::default();
         transform.set_translation_xyz(x, y, 0.);
 
@@ -147,11 +159,6 @@ fn init_sprites(world: &mut World, sprites: &[SpriteRender], dimensions: &Screen
         // well as the transform. If you want to add behaviour to your sprites,
         // you'll want to add a custom `Component` that will identify them, and a
         // `System` that will iterate over them. See https://book.amethyst.rs/stable/concepts/system.html
-        world
-            .create_entity()
-            .with(sprite.clone())
-            .with(transform)
-            .build();
     }
 }
 
@@ -159,7 +166,7 @@ fn init_sprites(world: &mut World, sprites: &[SpriteRender], dimensions: &Screen
 /// This is the pure code only way to create UI with amethyst.
 pub fn create_ui_example(world: &mut World) {
     // this creates the simple gray background UI element.
-    let ui_background = world
+    let _ui_background = world
         .create_entity()
         .with(UiImage::SolidColor([0.6, 0.1, 0.2, 1.0]))
         .with(UiTransform::new(

@@ -12,6 +12,8 @@ use amethyst::{
 };
 
 mod state;
+mod path;
+mod enemy;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -27,6 +29,8 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(
             InputBundle::<StringBindings>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
+        .with(path::PathFollowingSystem, "pathFollowingSystem", &[])
+        .with_bundle(enemy::MyBundle)?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
@@ -36,9 +40,10 @@ fn main() -> amethyst::Result<()> {
                 )
                 .with_plugin(RenderUi::default())
                 .with_plugin(RenderFlat2D::default()),
+
         )?;
 
-    let mut game = Application::new(resources, state::MyState, game_data)?;
+    let mut game = Application::new(resources, state::MyState::default(), game_data)?;
     game.run();
 
     Ok(())
