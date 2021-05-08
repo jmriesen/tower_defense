@@ -10,14 +10,16 @@ use amethyst::{
     }
 };
 use super::movement::Movement;
+// diagonals are causing problems as we might move into an aria that has no valid value.
 fn all_directions()->Vec<(isize,isize)>{
     let mut derections = vec![
-        (1,1),
+//        (1,1),
         (0,1),
-        (-1,1),
-        (-1,0), (-1,-1),
+ //       (-1,1),
+        (-1,0),
+//        (-1,-1),
         (0,-1),
-        (1,-1),
+//        (1,-1),
         (1,0),
     ];
     /*for x in -1..=1 {
@@ -104,7 +106,6 @@ impl Ground{
 
         let gradiant = self.gradiant_map.as_ref().unwrap();
         let (x,y)= gradiant[(y * self.y_scale) as usize][(x *self.x_scale) as usize];
-        println!("x:{},y:{}",x,y);
         let speed = if (x,y) == (0,0) {0.} else {1.};
 
         Movement{

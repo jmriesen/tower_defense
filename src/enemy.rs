@@ -15,14 +15,12 @@ use amethyst::Error;
 
 pub struct EnemyFactory{
     sprites: Vec<SpriteRender>,
-    path : Arc<super::path::Path>,
 }
 
 struct EnemyConfig {
     sprite : SpriteRender,
     location:Transform,
     movement: Movement,
-    path_data: PathFollowing
 }
 
 impl Component for EnemyFactory {
@@ -30,24 +28,9 @@ impl Component for EnemyFactory {
 }
 
 impl EnemyFactory{
-    //TODO this code is bloated and path should not be made hear.
     pub fn new(sprites: Vec<SpriteRender>)->Self{
-        let mut path = super::path::Path::new(Transform::default());
-
-        let mut target = Transform::default();
-        target.set_translation_xyz(400.,0.,0.);
-        path.add(target);
-
-        let mut target = Transform::default();
-        target.set_translation_xyz(400.,400.,0.);
-        path.add(target);
-
-        path.add(Transform::default());
-
-        let path = Arc::new(path);
         Self{
             sprites: sprites,
-            path:path,
 
         }
     }
@@ -56,7 +39,6 @@ impl EnemyFactory{
             sprite:self.sprites[0].clone(),
             location,
             movement:Movement{speed:1.,angle:0.},
-            path_data:PathFollowing::new(self.path.clone()),
         }
     }
 
@@ -96,27 +78,16 @@ impl<'s> System<'s> for SpawnSystem{
                 (&factories,&mut transforms).join()
                 .map(|(factory,transform)|factory.spawn(transform.clone()))
                 .collect();
-            //build bullets
+            //build enemies
             for config in parts{
                 entities
                     .build_entity()
                     .with(config.sprite,&mut sprite_render)
                     .with(config.location,&mut transforms)
                     .with(config.movement,&mut movements)
-                    .with(config.path_data,&mut path_following)
+                    .with(PathFollowing,&mut path_following)
                     .build();
             }
-            /*for (factory,transform) in (factories,transforms).join(){
-                to_spawn.push()
-                    entities
-                        .build_entity()
-                        .with(factory.sprites[0].clone(),&mut sprite_render)
-                        .with(Transform::default(),&mut transforms)
-                        .with(Movement{speed:1.,angle:0.},&mut movements)
-                        .with(PathFollowing::new(factory.path.clone()),&mut path_following)
-                        .build();
-            }
-                */
         }
     }
 }

@@ -38,6 +38,18 @@ impl SimpleState for MyState {
         // pass the world mutably to the following functions.
         let dimensions = (*world.read_resource::<ScreenDimensions>()).clone();
 
+        let mut ground = Ground::new(&dimensions,60,60);
+        for i in 0..30{
+            ground.map_mut()[i][10] = false;
+        }
+
+        ground.sink_points_mut().push((0,0));
+        ground.refresh();
+
+        world.create_entity()
+            .with(ground)
+            .build();
+
         // Place the camera
         init_camera(world, &dimensions);
 
@@ -57,17 +69,6 @@ impl SimpleState for MyState {
             .with(transform )
             .with(Tower::new(sprites,Duration::new(0, 500000000)))
             .build();
-
-        let dimensions = (*world.read_resource::<ScreenDimensions>()).clone();
-
-        let mut ground = Ground::new(&dimensions,60,60);
-        ground.sink_points_mut().push((0,0));
-        ground.refresh();
-
-        world.create_entity()
-            .with(ground)
-            .build();
-
     }
 
     /// The following events are handled:
