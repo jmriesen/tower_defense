@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 lexical = "^5.1"
-amethyst = {version = "0.15.2", features = ["no-slow-safety-checks"]}
+amethyst = {version = "0.15.2", features = ["no-slow-safety-checks","tiles"]}
 log = { version = "0.4.8", features = ["serde"] }
 
 [features]

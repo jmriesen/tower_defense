@@ -1,20 +1,18 @@
-use std::sync::Arc;
 use amethyst::{
     assets::{AssetStorage, Loader},
     core::transform::Transform,
-    input::{get_key, is_close_requested, is_key_down, VirtualKeyCode},
+    input::{is_close_requested, is_key_down, VirtualKeyCode, InputEvent},
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
-    ui::{
-        Anchor, FontHandle, LineMode,  TtfFormat, UiImage, UiText,
-        UiTransform,
-    },
     window::ScreenDimensions,
     shrev::{EventChannel},
 };
 
-use log::info;
+use std::time::Duration;
 use super::enemy;
+use super::enemy::EnemyFactory;
+use super::tower::Tower;
+use super::ground::Ground;
 
 /// A dummy game state that shows 3 sprites.
 #[derive(Default)]
@@ -45,11 +43,31 @@ impl SimpleState for MyState {
 
         // Load our sprites and display them
         let sprites = load_sprites(world);
-        world.insert(Some(super::enemy::EnemyFactory::new(sprites)));
 
-        //init_sprites(world, &sprites, &dimensions);
+        let mut transform = Transform::default();
+        transform.set_translation_xyz(600.,400.,0.);
+        world.create_entity()
+            .with(transform )
+            .with(EnemyFactory::new(sprites.clone()))
+            .build();
 
-        create_ui_example(world);
+        let mut transform = Transform::default();
+        transform.set_translation_xyz(400.,600.,0.);
+        world.create_entity()
+            .with(transform )
+            .with(Tower::new(sprites,Duration::new(0, 500000000)))
+            .build();
+
+        let dimensions = (*world.read_resource::<ScreenDimensions>()).clone();
+
+        let mut ground = Ground::new(&dimensions,60,60);
+        ground.sink_points_mut().push((0,0));
+        ground.refresh();
+
+        world.create_entity()
+            .with(ground)
+            .build();
+
     }
 
     /// The following events are handled:
@@ -57,33 +75,33 @@ impl SimpleState for MyState {
     /// - Any other keypress is simply logged to the console.
     fn handle_event(
         &mut self,
-        mut data: StateData<'_, GameData<'_, '_>>,
+        data: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> SimpleTrans {
-        if let StateEvent::Window(event) = &event {
-            // Check if the window should be closed
-            if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
-                return Trans::Quit;
+        match event{
+            StateEvent::Window(event) =>  {
+                // Check if the window should be closed
+                if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
+                    Trans::Quit
+                }else{
+                    Trans::None
+                }
+
             }
+            StateEvent::Input(InputEvent::ActionReleased(action)) => {
+                match  action.as_str() {
+                    "shoot" => {
+                        let world = data.world;
+                        let mut temp = world.fetch_mut::<EventChannel<enemy::SpawnEvent>>();
+                        temp.single_write(enemy::SpawnEvent);
+                    }
+                    _ => {},
+                }
+                Trans::None
 
-            let world = data.world;
-            let mut temp = world.fetch_mut::<EventChannel<enemy::SpawnEvent>>();
-            temp.single_write(enemy::SpawnEvent);
-            //enemy_factory.spawn(world);
-
-
-            // Listen to any key events
-            if let Some(event) = get_key(&event) {
-                info!("handling key event: {:?}", event);
             }
-
-            // If you're looking for a more sophisticated event handling solution,
-            // including key bindings and gamepad support, please have a look at
-            // https://book.amethyst.rs/stable/pong-tutorial/pong-tutorial-03.html#capturing-user-input
+            _ => Trans::None,
         }
-
-        // Keep going
-        Trans::None
     }
 }
 
@@ -143,74 +161,4 @@ fn load_sprites(world: &mut World) -> Vec<SpriteRender> {
             sprite_number: i,
         })
         .collect()
-}
-
-/// Creates an entity in the `world` for each of the provided `sprites`.
-/// They are individually placed around the center of the screen.
-fn init_sprites(world: &mut World, sprites: &[SpriteRender], dimensions: &ScreenDimensions) {
-    for (i, sprite) in sprites.iter().enumerate() {
-        // Center our sprites around the center of the window
-        let x = (i as f32 - 1.) * 200. + dimensions.width() * 0.5;
-        let y = (i as f32 - 1.) * 200. + dimensions.height() * 0.5;
-        let mut transform = Transform::default();
-        transform.set_translation_xyz(x, y, 0.);
-
-        // Create an entity for each sprite and attach the `SpriteRender` as
-        // well as the transform. If you want to add behaviour to your sprites,
-        // you'll want to add a custom `Component` that will identify them, and a
-        // `System` that will iterate over them. See https://book.amethyst.rs/stable/concepts/system.html
-    }
-}
-
-/// Creates a simple UI background and a UI text label
-/// This is the pure code only way to create UI with amethyst.
-pub fn create_ui_example(world: &mut World) {
-    // this creates the simple gray background UI element.
-    let _ui_background = world
-        .create_entity()
-        .with(UiImage::SolidColor([0.6, 0.1, 0.2, 1.0]))
-        .with(UiTransform::new(
-            "".to_string(),
-            Anchor::TopLeft,
-            Anchor::TopLeft,
-            30.0,
-            -30.,
-            0.,
-            250.,
-            50.,
-        ))
-        .build();
-
-    // This simply loads a font from the asset folder and puts it in the world as a resource,
-    // we also get a ref to the font that we then can pass to the text label we crate later.
-    let font: FontHandle = world.read_resource::<Loader>().load(
-        "fonts/Bangers-Regular.ttf",
-        TtfFormat,
-        (),
-        &world.read_resource(),
-    );
-
-    // This creates the actual label and places it on the screen.
-    // Take note of the z position given, this ensures the label gets rendered above the background UI element.
-    world
-        .create_entity()
-        .with(UiTransform::new(
-            "".to_string(),
-            Anchor::TopLeft,
-            Anchor::TopLeft,
-            40.0,
-            -40.,
-            1.,
-            200.,
-            50.,
-        ))
-        .with(UiText::new(
-            font,
-            "Hello, Amethyst UI!".to_string(),
-            [1., 1., 1., 1.],
-            30.,
-            LineMode::Single,
-            Anchor::TopLeft,
-        ))
-        .build();
 }

@@ -1,0 +1,9 @@
+* <2021-05-02 Sun> 
+  I like how the program is developing.
+  The ecs system is still weird to work with but thinking about it as a pipeline with partial computation is helpful.
+  I am still trying to think about when do I make something is own entity and when do handle dependencies between entities.
+  I think the next thing to do is make some sort of collision system so that I can start making things interact.
+  Currently path following dose a ruff sort of collision handling but I think it would be worth bulling out on its own.
+  I think I will have collision store a vec of all the things it collided with.
+  I will have to spend some time thinking about how call backs work and also how I clear the coalition information. 
+  Also it is probably worth splitting things out into ones that can give collisions and those that can reserve.

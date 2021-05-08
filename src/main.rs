@@ -14,6 +14,9 @@ use amethyst::{
 mod state;
 mod path;
 mod enemy;
+mod tower;
+mod movement;
+mod ground;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -30,6 +33,8 @@ fn main() -> amethyst::Result<()> {
             InputBundle::<StringBindings>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
         .with(path::PathFollowingSystem, "pathFollowingSystem", &[])
+        .with(tower::TowerSystem, "towerSystem", &[])
+        .with(movement::MovementSystem, "MovementSystem", &[])
         .with_bundle(enemy::MyBundle)?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(

@@ -1,15 +1,12 @@
 use std::sync::Arc;
 use amethyst::{
     prelude::*,
-    renderer::{SpriteRender, SpriteSheet},
+    renderer::{SpriteRender},
     core::{
         transform::Transform,
-        math::Vector3,
-        num::real::Real,
-        num::FloatConst,
         bundle::SystemBundle,
     },
-    ecs::{DispatcherBuilder,Read,Entities,Join,Component,DenseVecStorage,WriteStorage,System,SystemData,ReadStorage},
+    ecs::{Join,Component,DenseVecStorage,ReadStorage,DispatcherBuilder,Read,Entities,WriteStorage,System,SystemData},
     derive::SystemDesc,
     shrev::{EventChannel,ReaderId},
 };
@@ -19,9 +16,21 @@ use amethyst::Error;
 pub struct EnemyFactory{
     sprites: Vec<SpriteRender>,
     path : Arc<super::path::Path>,
-
 }
+
+struct EnemyConfig {
+    sprite : SpriteRender,
+    location:Transform,
+    movement: Movement,
+    path_data: PathFollowing
+}
+
+impl Component for EnemyFactory {
+    type Storage = DenseVecStorage<Self>;
+}
+
 impl EnemyFactory{
+    //TODO this code is bloated and path should not be made hear.
     pub fn new(sprites: Vec<SpriteRender>)->Self{
         let mut path = super::path::Path::new(Transform::default());
 
@@ -42,9 +51,20 @@ impl EnemyFactory{
 
         }
     }
+    fn spawn(&self,location:Transform)->EnemyConfig {
+        EnemyConfig {
+            sprite:self.sprites[0].clone(),
+            location,
+            movement:Movement{speed:1.,angle:0.},
+            path_data:PathFollowing::new(self.path.clone()),
+        }
+    }
+
+
 }
 pub struct SpawnEvent;
 use super::path::PathFollowing;
+use super::movement::Movement;
 
 #[derive(SystemDesc)]
 #[system_desc(name(SpawnSystemDesc))]
@@ -62,23 +82,41 @@ impl<'s> System<'s> for SpawnSystem{
     type SystemData = (
         Entities<'s>,
         Read<'s, EventChannel<SpawnEvent>>,
-        Read<'s, Option<EnemyFactory>>,
+        ReadStorage<'s, EnemyFactory>,
         WriteStorage<'s, Transform>,
+        WriteStorage<'s, Movement>,
         WriteStorage<'s, PathFollowing>,
         WriteStorage<'s, SpriteRender>,
     );
 
-    fn run(&mut self, (entities, channel, factory, mut transforms, mut path_following, mut sprite_render): Self::SystemData) {
+    fn run(&mut self, (entities, channel, factories, mut transforms,mut movements, mut path_following, mut sprite_render): Self::SystemData) {
         for _event in channel.read(&mut self.reader) {
-            if let Some(factory) = factory.as_ref(){
-
+            //extract all information I will need to build bullets.
+            let parts :Vec<EnemyConfig> =
+                (&factories,&mut transforms).join()
+                .map(|(factory,transform)|factory.spawn(transform.clone()))
+                .collect();
+            //build bullets
+            for config in parts{
                 entities
                     .build_entity()
-                    .with(factory.sprites[0].clone(),&mut sprite_render)
-                    .with(Transform::default(),&mut transforms)
-                    .with(PathFollowing::new(factory.path.clone()),&mut path_following)
+                    .with(config.sprite,&mut sprite_render)
+                    .with(config.location,&mut transforms)
+                    .with(config.movement,&mut movements)
+                    .with(config.path_data,&mut path_following)
                     .build();
             }
+            /*for (factory,transform) in (factories,transforms).join(){
+                to_spawn.push()
+                    entities
+                        .build_entity()
+                        .with(factory.sprites[0].clone(),&mut sprite_render)
+                        .with(Transform::default(),&mut transforms)
+                        .with(Movement{speed:1.,angle:0.},&mut movements)
+                        .with(PathFollowing::new(factory.path.clone()),&mut path_following)
+                        .build();
+            }
+                */
         }
     }
 }
