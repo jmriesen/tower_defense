@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use amethyst::{
     prelude::*,
     renderer::{SpriteRender},
@@ -44,6 +43,11 @@ impl EnemyFactory{
 
 
 }
+pub struct Enemy;
+
+impl Component for Enemy{
+    type Storage = DenseVecStorage<Self>;
+}
 pub struct SpawnEvent;
 use super::path::PathFollowing;
 use super::movement::Movement;
@@ -69,9 +73,10 @@ impl<'s> System<'s> for SpawnSystem{
         WriteStorage<'s, Movement>,
         WriteStorage<'s, PathFollowing>,
         WriteStorage<'s, SpriteRender>,
+        WriteStorage<'s, Enemy>,
     );
 
-    fn run(&mut self, (entities, channel, factories, mut transforms,mut movements, mut path_following, mut sprite_render): Self::SystemData) {
+    fn run(&mut self, (entities, channel, factories, mut transforms,mut movements, mut path_following, mut sprite_render, mut enemies): Self::SystemData) {
         for _event in channel.read(&mut self.reader) {
             //extract all information I will need to build bullets.
             let parts :Vec<EnemyConfig> =
@@ -86,6 +91,7 @@ impl<'s> System<'s> for SpawnSystem{
                     .with(config.location,&mut transforms)
                     .with(config.movement,&mut movements)
                     .with(PathFollowing,&mut path_following)
+                    .with(Enemy,&mut enemies)
                     .build();
             }
         }

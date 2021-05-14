@@ -1,18 +1,28 @@
+use serde::{Serialize, Deserialize};
 use std::collections::VecDeque;
 use amethyst::{
+    prelude::*,
     window::ScreenDimensions,
     core::{
         num::FloatConst,
         ecs::{
             Component,
             DenseVecStorage
-        }
-    }
+        },
+        math::{Vector3,Point3,},
+        Transform,
+    },
+    tiles::{Tile,TileMap},
+    prelude::World,
+    renderer::Camera,
 };
+//There are two coords systems. One witch is the global and one that is the tile.
+const TILE_SIZE:u32 = 64;
 use super::movement::Movement;
 // diagonals are causing problems as we might move into an aria that has no valid value.
+//We get in the tiles but it dose not really look like that think about this.
 fn all_directions()->Vec<(isize,isize)>{
-    let mut derections = vec![
+    let derections = vec![
 //        (1,1),
         (0,1),
  //       (-1,1),
@@ -31,27 +41,29 @@ fn all_directions()->Vec<(isize,isize)>{
     derections
 }
 //right now any scaling is not going to be done in here.
+
+#[derive(Deserialize, Serialize,)]
 pub struct Ground{
-    x_scale:f32,
-    y_scale:f32,
+    colum:u32,
+    rows:u32,
+    //TODO think about making invariant between column and rows by using arrays possibly.
     map:Vec<Vec<bool>>,
     sink_points:Vec<(usize,usize)>,
     //cashed value None if invalid.
     gradiant_map : Option<Vec<Vec<(isize,isize)>>>,
 }
 impl Ground{
-    //I should start to handle scaling
-    pub fn new(dimensions: &ScreenDimensions,colum:usize,rows:usize)->Self{
+    pub fn new(_dimensions: &ScreenDimensions,colum:u32,rows:u32)->Self{
         Self{
-            x_scale :(colum as f32)/dimensions.width(),
-            y_scale :(rows as f32)/dimensions.height(),
-            map:vec![vec![true;colum];rows],
+            colum,
+            rows,
+            map:vec![vec![true;colum as usize];rows as usize],
             sink_points: vec![],
             gradiant_map:None,
         }
     }
 
-    pub fn map(&self)->&Vec<Vec<bool>>{
+    pub fn _map(&self)->&Vec<Vec<bool>>{
         &self.map
     }
 
@@ -61,7 +73,7 @@ impl Ground{
         &mut self.map
     }
 
-    pub fn sink_points(&self)->&Vec<(usize,usize)>{
+    pub fn _sink_points(&self)->&Vec<(usize,usize)>{
         &self.sink_points
     }
 
@@ -102,19 +114,74 @@ impl Ground{
 
         }
     }
-    pub fn direction_at(&self,(x,y):(f32,f32))->Movement{
-
-        let gradiant = self.gradiant_map.as_ref().unwrap();
-        let (x,y)= gradiant[(y * self.y_scale) as usize][(x *self.x_scale) as usize];
-        let speed = if (x,y) == (0,0) {0.} else {1.};
-
-        Movement{
-            angle:(y as f32).atan2(x as f32)- f32::FRAC_PI_2(),
-            speed
-        }
+    fn _tile_to_trans((x,y):(f32,f32))->(f32,f32){
+        (x * TILE_SIZE as f32,y * TILE_SIZE  as f32)
     }
+    fn trans_to_tile((x,y):(f32,f32))->(f32,f32){
+        (x /TILE_SIZE as f32,y /TILE_SIZE as f32)
+    }
+    pub fn direction_at(&self,(x,y):(f32,f32))->Option<Movement>{
+        let gradiant = self.gradiant_map.as_ref().unwrap();
+        let (x,y) = Ground::trans_to_tile((x,y));
+        let (grad_x,grad_y) = gradiant[y.round() as usize][x.round() as usize];
+        let (target_x,target_y) = (x.round()+grad_x as f32,y.round()+grad_y as f32);
+        let (delta_x,delta_y) = (target_x-x,target_y - y);
+
+        let speed = if delta_x.abs()<0.05&&delta_y.abs()<0.05 {0.} else {1.};
+        Some(Movement{
+            angle:delta_y.atan2(delta_x)- f32::FRAC_PI_2(),
+            speed
+        })
+    }
+    pub fn create_tile_map(&self,world:&mut World){
+        let map = TileMap::<SimpleTile>::new(
+            Vector3::new(self.colum, self.rows, 1), // The dimensions of the map
+            Vector3::new(TILE_SIZE,TILE_SIZE, 1), // The dimensions of each tile
+            Some(super::state::load_sheet(world, "logo")),
+        );
+
+        let (width,hight) = ((TILE_SIZE*self.colum) as f32,(TILE_SIZE*self.rows) as f32);
+
+        let offset = -(TILE_SIZE as f32 );
+        let mut transform = Transform::default();
+        transform.append_translation_xyz(0.,offset,0.);
+        transform.append_translation_xyz(width/2.,hight/2.,0.);
+        world.create_entity()
+            .with(map)
+            .with(transform)
+            .build();
+    }
+    pub fn create_camera(&self,world: &mut World) {
+        let (width,hight) = ((TILE_SIZE*self.colum) as f32,(TILE_SIZE*self.rows) as f32);
+        let mut transform = Transform::default();
+        let offset = -(TILE_SIZE as f32 /2.);
+        transform.append_translation_xyz(0.,0.,1.);
+        transform.append_translation_xyz(offset,offset,0.);
+        transform.append_translation_xyz(width/2.,hight/2.,0.);
+
+        world
+            .create_entity()
+            .with(Camera::standard_2d(width,hight))
+            .with(transform)
+            .build();
+}
 }
 
 impl Component for Ground {
     type Storage = DenseVecStorage<Self>;
+}
+
+#[derive(Clone, Default)]
+pub struct SimpleTile;
+impl Tile for SimpleTile {
+    fn sprite(&self, coords: Point3<u32>, world: &World) -> Option<usize> {
+        if let Some(ground) = (&*world.fetch::<Option<Ground>>()).as_ref(){
+            //default I want positive y as up, default is down.
+            let (x,y) = (coords.x as usize,(ground.colum-1-coords.y) as usize);
+            let index = if ground.map[y][x] {0} else {1};
+            Some(index)
+        }else{
+            None
+        }
+    }
 }

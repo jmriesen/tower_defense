@@ -1,9 +1,9 @@
 use amethyst::{
-    assets::{AssetStorage, Loader},
+    assets::{AssetStorage, Loader,Handle},
     core::transform::Transform,
     input::{is_close_requested, is_key_down, VirtualKeyCode, InputEvent},
     prelude::*,
-    renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
+    renderer::{ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
     window::ScreenDimensions,
     shrev::{EventChannel},
 };
@@ -12,7 +12,7 @@ use std::time::Duration;
 use super::enemy;
 use super::enemy::EnemyFactory;
 use super::tower::Tower;
-use super::ground::Ground;
+use super::ground::{Ground};
 
 /// A dummy game state that shows 3 sprites.
 #[derive(Default)]
@@ -38,37 +38,37 @@ impl SimpleState for MyState {
         // pass the world mutably to the following functions.
         let dimensions = (*world.read_resource::<ScreenDimensions>()).clone();
 
-        let mut ground = Ground::new(&dimensions,60,60);
-        for i in 0..30{
-            ground.map_mut()[i][10] = false;
+        let mut ground = Ground::new(&dimensions,10,10);
+        for i in 0..9{
+            ground.map_mut()[i][1] = false;
+            ground.map_mut()[9-i][3] = false;
         }
 
         ground.sink_points_mut().push((0,0));
         ground.refresh();
+        ground.create_tile_map(world);
+        ground.create_camera(world);
 
-        world.create_entity()
-            .with(ground)
-            .build();
+        world.insert(Some(ground));
 
-        // Place the camera
-        init_camera(world, &dimensions);
 
         // Load our sprites and display them
         let sprites = load_sprites(world);
 
         let mut transform = Transform::default();
-        transform.set_translation_xyz(600.,400.,0.);
+        transform.set_translation_xyz(32.*4.,32.*5.,0.);
         world.create_entity()
             .with(transform )
             .with(EnemyFactory::new(sprites.clone()))
             .build();
 
-        let mut transform = Transform::default();
-        transform.set_translation_xyz(400.,600.,0.);
+        let transform = Transform::default();
+//        transform.set_translation_xyz(400.,600.,0.);
         world.create_entity()
-            .with(transform )
-            .with(Tower::new(sprites,Duration::new(0, 500000000)))
+            .with(transform)
+            .with(Tower::new(sprites,Duration::new(1, 0)))
             .build();
+
     }
 
     /// The following events are handled:
@@ -110,53 +110,38 @@ impl SimpleState for MyState {
 ///
 /// The `dimensions` are used to center the camera in the middle
 /// of the screen, as well as make it cover the entire screen.
-fn init_camera(world: &mut World, dimensions: &ScreenDimensions) {
-    let mut transform = Transform::default();
-    transform.set_translation_xyz(dimensions.width() * 0.5, dimensions.height() * 0.5, 1.);
+//TODO I should mess with this and see if I can make it work more how I want.
 
-    world
-        .create_entity()
-        .with(Camera::standard_2d(dimensions.width(), dimensions.height()))
-        .with(transform)
-        .build();
-}
 
 /// Loads and splits the `logo.png` image asset into 3 sprites,
 /// which will then be assigned to entities for rendering them.
 ///
 /// The provided `world` is used to retrieve the resource loader.
-fn load_sprites(world: &mut World) -> Vec<SpriteRender> {
-    // Load the texture for our sprites. We'll later need to
-    // add a handle to this texture to our `SpriteRender`s, so
-    // we need to keep a reference to it.
+pub fn load_sheet(world: &mut World,file_name:&str) -> Handle<SpriteSheet> {
     let texture_handle = {
         let loader = world.read_resource::<Loader>();
         let texture_storage = world.read_resource::<AssetStorage<Texture>>();
         loader.load(
-            "sprites/logo.png",
+            format!("sprites/{}.png",file_name),
             ImageFormat::default(),
             (),
             &texture_storage,
         )
     };
 
-    // Load the spritesheet definition file, which contains metadata on our
-    // spritesheet texture.
-    let sheet_handle = {
-        let loader = world.read_resource::<Loader>();
-        let sheet_storage = world.read_resource::<AssetStorage<SpriteSheet>>();
-        loader.load(
-            "sprites/logo.ron",
-            SpriteSheetFormat(texture_handle),
-            (),
-            &sheet_storage,
-        )
-    };
+    let loader = world.read_resource::<Loader>();
+    let sheet_storage = world.read_resource::<AssetStorage<SpriteSheet>>();
+    loader.load(
+        format!("sprites/{}.ron",file_name),
+        SpriteSheetFormat(texture_handle),
+        (),
+        &sheet_storage,
+    )
 
-    // Create our sprite renders. Each will have a handle to the texture
-    // that it renders from. The handle is safe to clone, since it just
-    // references the asset.
-    (0..3)
+}
+fn load_sprites(world: &mut World) -> Vec<SpriteRender> {
+    let sheet_handle = load_sheet(world,"enemy");
+    (0..1)
         .map(|i| SpriteRender {
             sprite_sheet: sheet_handle.clone(),
             sprite_number: i,

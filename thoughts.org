@@ -7,3 +7,49 @@
   I think I will have collision store a vec of all the things it collided with.
   I will have to spend some time thinking about how call backs work and also how I clear the coalition information. 
   Also it is probably worth splitting things out into ones that can give collisions and those that can reserve.
+* <2021-05-08 Sat> 
+  Ok I really like that I have a path finding algorithm and some Tiles showing.
+  I need to spend some time thinking about how I will handle my transforms and dependencies with regard to that.
+  
+  I considered having one master object that stores the main transform and have everything be a child of that.
+  However I don't really like that as it would make generating entities complicated.
+  Alternatively I am considering making a function of ground that will spit out the a *new "default"* based of the ground layout.
+  I like this Idea however I would need to be a bit careful about making sure I always use it rather then default.
+  Additionally there is a concept of a size witch I might be able to explore in order for scaling to work handle this.
+** Learn about how scale is dealt with.
+*** DONE reset the tile sheet to use a scale of 1 and centered at default.
+    CLOSED: [2021-05-08 Sat 14:15]
+*** DONE change the camera layout so that the screen is filled properly.
+    CLOSED: [2021-05-08 Sat 14:15]
+*** DONE find out where/how negative numbers are mapped in the tile map.
+    CLOSED: [2021-05-08 Sat 14:15]
+    This will be important for when I need to index into ground and will determine how I need to think about the transforms
+*** DONE scale entities that are created and get the back on the screen ( indexing my not be correct yet).
+    CLOSED: [2021-05-08 Sat 14:15]
+** implement transform management system.
+*** TODO Create/load in spites that are the appropriate size.
+*** DONE Modify ground to store the size of a tile.
+    CLOSED: [2021-05-14 Fri 11:56]
+*** DONE Modify ground so that it creates the map.
+    CLOSED: [2021-05-14 Fri 11:56]
+*** DONE Modify ground so it returns it returns the transforms of the camera/map.  
+    CLOSED: [2021-05-14 Fri 11:56]
+* <2021-05-14 Fri>  
+  Ok I like that the game is going and the code I have made a fair amount of progress fairly quickly. 
+** TODO Making the game look better.
+*** TODO Add sprite for the ground.
+    - [ ] Multiple background tiles for the spites.
+    - [ ] Add something with trees or what not.
+    - [ ] possibly create multiple types of background tiles in the map.
+*** TODO Make a sprite for the bullets
+** TODO Make the game more playable 
+*** TODO Add user controls.
+**** TODO Make a currier that I can use.
+     - use vim bindings for control.
+     - move with unit size rather then anything else.
+*** TODO Make a way of editing layers/save layers.
+** Redactor code to make it more readable.
+*** TODO Move tower to its own mod with system in side in separate files.
+*** TODO Move ground to its own mod with path following in side in separate files.
+*** I will leave collations as its own top leval system.
+*** TODO Figour out a nice way to put the impl blocks for Component in a out of the way place.

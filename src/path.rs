@@ -2,10 +2,9 @@ use amethyst::{
     core::{
         transform::Transform,
     },
-    ecs::{Entities,Join,Component,DenseVecStorage,WriteStorage,ReadStorage,System,SystemData},
+    ecs::{Read,Join,Component,DenseVecStorage,WriteStorage,ReadStorage,System,SystemData},
     derive::SystemDesc,
 };
-use std::sync::Arc;
 use super::movement::Movement;
 use super::ground::Ground;
 
@@ -24,16 +23,17 @@ impl<'s> System<'s> for PathFollowingSystem{
         WriteStorage<'s, PathFollowing>,
         ReadStorage<'s, Transform>,
         WriteStorage<'s, Movement>,
-        ReadStorage<'s, Ground>,
+        Read<'s, Option<Ground>>,
     );
 
     fn run(&mut self, (mut pathfollowings,transforms,mut movements,ground): Self::SystemData) {
-        //let mut to_remove = vec![];
-        for ground in (ground).join(){
-            for (mut path_following,transform,movement) in
+        if let Some(ground) = &*ground {
+            for (mut _path_following,transform,movement) in
                 (&mut pathfollowings,&transforms,&mut movements).join() {
                     let pos = transform.translation();
-                    *movement =  ground.direction_at((pos.x,pos.y));
+                    if let Some(mov) = ground.direction_at((pos.x,pos.y)){
+                        *movement = mov;
+                    }
                 }
         }
     }

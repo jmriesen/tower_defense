@@ -1,10 +1,11 @@
 [package]
-name = "amethyst-starter-2d"
+name = "tower-defiance-experiment "
 version = "0.2.0"
-authors = ["Hilmar Wiegand <me@hwgnd.de>", "Amethyst Foundation <contact@amethyst.rs>"]
+authors = ["Jacob Riesen"]
 edition = "2018"
 
 [dependencies]
+serde = { version = "1.0", features = ["derive"] }
 lexical = "^5.1"
 amethyst = {version = "0.15.2", features = ["no-slow-safety-checks","tiles"]}
 log = { version = "0.4.8", features = ["serde"] }

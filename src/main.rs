@@ -1,3 +1,7 @@
+
+
+
+
 use amethyst::{
     core::transform::TransformBundle,
     input::{InputBundle, StringBindings},
@@ -7,6 +11,7 @@ use amethyst::{
         types::DefaultBackend,
         RenderingBundle,
     },
+    tiles::{RenderTiles2D},
     ui::{RenderUi, UiBundle},
     utils::application_root_dir,
 };
@@ -17,6 +22,8 @@ mod enemy;
 mod tower;
 mod movement;
 mod ground;
+mod collitions;
+mod aiming;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -35,6 +42,8 @@ fn main() -> amethyst::Result<()> {
         .with(path::PathFollowingSystem, "pathFollowingSystem", &[])
         .with(tower::TowerSystem, "towerSystem", &[])
         .with(movement::MovementSystem, "MovementSystem", &[])
+        .with(collitions::CollitionSystem, "CollitionSystem", &[])
+        .with(aiming::AimingSystem, "AimingSystem", &[])
         .with_bundle(enemy::MyBundle)?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(
@@ -44,7 +53,8 @@ fn main() -> amethyst::Result<()> {
                         .with_clear([0.34, 0.36, 0.52, 1.0]),
                 )
                 .with_plugin(RenderUi::default())
-                .with_plugin(RenderFlat2D::default()),
+                .with_plugin(RenderFlat2D::default())
+                .with_plugin(RenderTiles2D::<ground::SimpleTile>::default())
 
         )?;
 
