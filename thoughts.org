@@ -36,20 +36,42 @@
     CLOSED: [2021-05-14 Fri 11:56]
 * <2021-05-14 Fri>  
   Ok I like that the game is going and the code I have made a fair amount of progress fairly quickly. 
-** TODO Making the game look better.
-*** TODO Add sprite for the ground.
-    - [ ] Multiple background tiles for the spites.
+** DONE Making the game look better.
+   CLOSED: [2021-05-18 Tue 18:04]
+*** DONE Add sprite for the ground.
+    CLOSED: [2021-05-18 Tue 18:04]
+    - [X] Multiple background tiles for the spites.
     - [ ] Add something with trees or what not.
-    - [ ] possibly create multiple types of background tiles in the map.
-*** TODO Make a sprite for the bullets
-** TODO Make the game more playable 
-*** TODO Add user controls.
-**** TODO Make a currier that I can use.
+    - [X] possibly create multiple types of background tiles in the map.
+*** DONE Make a sprite for the bullets
+    CLOSED: [2021-05-18 Tue 18:04]
+** DONE Make the game more playable 
+   CLOSED: [2021-05-18 Tue 18:04]
+*** DONE Add user controls.
+    CLOSED: [2021-05-18 Tue 18:04]
+**** DONE Make a currier that I can use.
+     CLOSED: [2021-05-18 Tue 18:04]
      - use vim bindings for control.
      - move with unit size rather then anything else.
 *** TODO Make a way of editing layers/save layers.
 ** Redactor code to make it more readable.
-*** TODO Move tower to its own mod with system in side in separate files.
-*** TODO Move ground to its own mod with path following in side in separate files.
+*** DONE Move tower to its own mod with system in side in separate files.
+    CLOSED: [2021-05-18 Tue 18:05]
+*** DONE Move ground to its own mod with path following in side in separate files.
+    CLOSED: [2021-05-18 Tue 18:05]
 *** I will leave collations as its own top leval system.
-*** TODO Figour out a nice way to put the impl blocks for Component in a out of the way place.
+*** DONE Figour out a nice way to put the impl blocks for Component in a out of the way place.
+    CLOSED: [2021-05-18 Tue 18:05]
+* <2021-05-18 Tue>  
+** TODO re-factor enemy into sub mods. 
+** TODO split Tower placement into two separate systems
+*** One for tracking mouse position.
+    Define a type and use a reasorce.
+*** One for placement 
+** TODO create an editing state.
+** TODO implement some normal features.
+   - [ ] a money system.
+   - [ ] towers can only be placed on open tiles.
+   - [ ] health/life (it might be interesting if these were the same value, the more you spend the easier it is to lose.)
+   - [ ] Ranges for towers.
+** TODO Create more of a waive system.

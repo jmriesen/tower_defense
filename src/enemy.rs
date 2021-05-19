@@ -5,19 +5,18 @@ use amethyst::{
         transform::Transform,
         bundle::SystemBundle,
     },
-    ecs::{Join,Component,DenseVecStorage,ReadStorage,DispatcherBuilder,Read,Entities,WriteStorage,System,SystemData},
+    ecs::{ReadExpect,Join,Component,DenseVecStorage,ReadStorage,DispatcherBuilder,Read,Entities,WriteStorage,System,SystemData},
     derive::SystemDesc,
     shrev::{EventChannel,ReaderId},
 };
 use amethyst::Error;
 
+use super::sprites_management::SpriteReasorces;
 
-pub struct EnemyFactory{
-    sprites: Vec<SpriteRender>,
-}
+
+pub struct EnemyFactory;
 
 struct EnemyConfig {
-    sprite : SpriteRender,
     location:Transform,
     movement: Movement,
 }
@@ -25,23 +24,14 @@ struct EnemyConfig {
 impl Component for EnemyFactory {
     type Storage = DenseVecStorage<Self>;
 }
-
+//TODO this should not store the sprite sheet.
 impl EnemyFactory{
-    pub fn new(sprites: Vec<SpriteRender>)->Self{
-        Self{
-            sprites: sprites,
-
-        }
-    }
     fn spawn(&self,location:Transform)->EnemyConfig {
         EnemyConfig {
-            sprite:self.sprites[0].clone(),
             location,
             movement:Movement{speed:1.,angle:0.},
         }
     }
-
-
 }
 pub struct Enemy;
 
@@ -49,8 +39,10 @@ impl Component for Enemy{
     type Storage = DenseVecStorage<Self>;
 }
 pub struct SpawnEvent;
-use super::path::PathFollowing;
-use super::movement::Movement;
+use super::movement::{
+    path::PathFollowing,
+    Movement,
+};
 
 #[derive(SystemDesc)]
 #[system_desc(name(SpawnSystemDesc))]
@@ -74,9 +66,10 @@ impl<'s> System<'s> for SpawnSystem{
         WriteStorage<'s, PathFollowing>,
         WriteStorage<'s, SpriteRender>,
         WriteStorage<'s, Enemy>,
+        ReadExpect<'s, SpriteReasorces<Enemy>>,
     );
 
-    fn run(&mut self, (entities, channel, factories, mut transforms,mut movements, mut path_following, mut sprite_render, mut enemies): Self::SystemData) {
+    fn run(&mut self, (entities, channel, factories, mut transforms,mut movements, mut path_following, mut sprite_render, mut enemies, enemy_sprite): Self::SystemData) {
         for _event in channel.read(&mut self.reader) {
             //extract all information I will need to build bullets.
             let parts :Vec<EnemyConfig> =
@@ -87,7 +80,7 @@ impl<'s> System<'s> for SpawnSystem{
             for config in parts{
                 entities
                     .build_entity()
-                    .with(config.sprite,&mut sprite_render)
+                    .with(enemy_sprite.get(0),&mut sprite_render)
                     .with(config.location,&mut transforms)
                     .with(config.movement,&mut movements)
                     .with(PathFollowing,&mut path_following)
