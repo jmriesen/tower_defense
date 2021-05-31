@@ -8,10 +8,10 @@
     - [X] bullets and enemies both are destroyed on contact.
     - [X] Towers can aim there bullets.
     - [ ] Towers have a range.
-  - [ ] Multiple enemy types
-  - [ ] Multiple tower types
   - [ ] money/reasorce system
   - [ ] Level loading
   - [ ] Enemies come in waves
     - [ ] waves start after a certain amount of time.
     - [ ] each successive wave gets harder.
+  - [ ] Multiple enemy types
+  - [ ] Multiple tower types

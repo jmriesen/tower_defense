@@ -18,7 +18,6 @@ mod tower;
 mod movement;
 mod ground;
 mod collitions;
-//mod mouse_system;
 mod sprites_management;
 
 fn main() -> amethyst::Result<()> {
