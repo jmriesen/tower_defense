@@ -1,0 +1,17 @@
+* Project Purpose
+  This is a project that I am working on in order to improve my understanding of the entity component system design pattern and the rust programming language.
+* Project Goals
+  Since the primacy purpose of this project is learning the goals are vary flexible and subject to change but here is a rough list of features I would eventually like to implement.
+  - [X] enemies have some path finding abilities.
+  - [-] Towers launch bullets.
+    - [X] Bullets are sent at a regular interval
+    - [X] bullets and enemies both are destroyed on contact.
+    - [X] Towers can aim there bullets.
+    - [ ] Towers have a range.
+  - [ ] Multiple enemy types
+  - [ ] Multiple tower types
+  - [ ] money/reasorce system
+  - [ ] Level loading
+  - [ ] Enemies come in waves
+    - [ ] waves start after a certain amount of time.
+    - [ ] each successive wave gets harder.
