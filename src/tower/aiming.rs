@@ -7,6 +7,7 @@ use amethyst::{
 };
 use super::Tower;
 use super::super::enemy::Enemy;
+use super::super::ground::TILE_SIZE;
 
 
 
@@ -29,17 +30,27 @@ impl<'s> System<'s> for AimingSystem{
                     |(_enemy, enemy_trans)|
                     distance_sqared(tower_trans,enemy_trans).round() as isize
                 );
-            if let Some((_enemy, enemy_trans)) = min{
-                let enemy_pos = enemy_trans.translation();
-                let tower_pos = tower_trans.translation();
-                let angle = (enemy_pos.y-tower_pos.y).atan2(enemy_pos.x-tower_pos.x);
-                tower.angle = Some(angle);
-            }else{
-                tower.angle = None;
-            }
+            let target = check_range(tower,tower_trans,min);
+            tower.angle = calculate_angle(tower,tower_trans,target);
         }
     }
 }
+fn check_range<'a,'b>(_tower:&Tower,tower_trans: &Transform,target:Option<(&'a Enemy,&'b Transform)>)->Option<(&'a Enemy,&'b Transform)>{
+    let (_enemy, enemy_trans) = target?;
+    if distance_sqared(tower_trans,enemy_trans) < (5.*TILE_SIZE as f32).powf(2.) {
+        target
+    }else {
+       None
+    }
+}
+fn calculate_angle(_tower:&Tower,tower_trans: &Transform,target:Option<(&Enemy,&Transform)>)->Option<f32>{
+    let (_enemy, enemy_trans) = target?;
+    let enemy_pos = enemy_trans.translation();
+    let tower_pos = tower_trans.translation();
+    let angle = (enemy_pos.y-tower_pos.y).atan2(enemy_pos.x-tower_pos.x);
+    Some(angle)
+}
+
 
 fn distance_sqared(t1:&Transform, t2:&Transform)->f32{
     let pos1 = t1.translation();

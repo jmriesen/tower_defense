@@ -3,11 +3,11 @@
 * Project Goals
   Since the primacy purpose of this project is learning the goals are vary flexible and subject to change but here is a rough list of features I would eventually like to implement.
   - [X] enemies have some path finding abilities.
-  - [-] Towers launch bullets.
+  - [X] Towers launch bullets.
     - [X] Bullets are sent at a regular interval
     - [X] bullets and enemies both are destroyed on contact.
     - [X] Towers can aim there bullets.
-    - [ ] Towers have a range.
+    - [X] Towers have a range.
   - [ ] money/reasorce system
   - [ ] Level loading
   - [ ] Enemies come in waves

@@ -13,7 +13,7 @@ use amethyst::{
 pub mod tiles;
 mod utility;
 mod accessors;
-const TILE_SIZE:u32 = 64;
+pub const TILE_SIZE:u32 = 64;
 use super::movement::Movement;
 fn all_directions()->Vec<(isize,isize)>{
     vec![
