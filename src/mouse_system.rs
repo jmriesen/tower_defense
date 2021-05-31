@@ -53,7 +53,9 @@ impl<'s> System<'s> for PlaceTowerSystem{
     );
 
     fn run(&mut self, (entities, channel, mut enemy_factories,mut transforms, input, tower_sprites, mut sprite_render, dimensions, ground,camra): Self::SystemData) {
-        for _event in channel.read(&mut self.reader) {
+/*        for _event in channel.read(&mut self.reader) {
+            //There is no real reason this needs to be a system any more
+            //possibly more it into state instead.
             let point = {
                 //Only supporting one camra at the moment.
                 let (camra, transform) = (&camra, &transforms).join().next().unwrap();
@@ -73,6 +75,7 @@ impl<'s> System<'s> for PlaceTowerSystem{
                 .with(tower_sprites.get(0), &mut sprite_render)
                 .build();
         }
+        */
     }
 }
 

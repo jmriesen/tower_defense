@@ -3,7 +3,22 @@ use amethyst::{
     prelude::*,
     shrev::{EventChannel},
     utils::application_root_dir,
+    ecs::{
+        ReadStorage,
+        Join,
+        Read,
+        ReadExpect,
+        WriteStorage,
+    },
+    core::{
+        transform::Transform,
+        math::{Point3},
+    },
+    renderer::{Camera},
+    input::{InputHandler,StringBindings},
+    window::ScreenDimensions,
 };
+
 use super::enemy;
 use super::enemy::{EnemyFactory,Enemy};
 use super::tower::{Tower,Bullet};
@@ -46,7 +61,7 @@ impl SimpleState for MyState {
         ground.create_tile_map(world);
         ground.create_camera(world);
 
- 
+
         world.insert(ground);
 
         world.create_entity()
@@ -83,17 +98,35 @@ impl SimpleState for MyState {
 
             }
             StateEvent::Input(InputEvent::MouseButtonReleased(_)) => {
-                let world = data.world;
-                let mut temp = world.fetch_mut::<EventChannel<super::mouse_system::PlaceTower>>();
-                temp.single_write(super::mouse_system::PlaceTower);
+                let mut world = data.world;
+                let transform = get_mouse_position(world);
+                Tower::create(&mut world, transform);
                 Trans::None
-            }
-            StateEvent::Ui(_) =>{
-                println!("ui UiEvent");
-                Trans::None
-            }
+            },
             _  =>Trans::None,
         }
     }
+}
+fn get_mouse_position(world:&World)->Transform{
+    let (camras,transfroms,input,dimensions):
+    (
+        ReadStorage<Camera>,
+        WriteStorage<Transform>,
+        Read<InputHandler<StringBindings>>,
+        ReadExpect<ScreenDimensions>,
+    ) = world.system_data();
+    let point = {
+        //Only supporting one camra at the moment.
+        let (camra, transform) = (&camras, &transfroms).join().next().unwrap();
+        let (x,y) = input.mouse_position().unwrap();
+        camra.screen_to_world_point(
+            Point3::new(x, y, 1.0),
+            dimensions.diagonal(),
+            transform
+        )
+    };
+    let mut transform = Transform::default();
+    transform.set_translation_xyz(point.x ,point.y,0.);
+    transform
 }
 

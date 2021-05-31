@@ -18,7 +18,7 @@ mod tower;
 mod movement;
 mod ground;
 mod collitions;
-mod mouse_system;
+//mod mouse_system;
 mod sprites_management;
 
 fn main() -> amethyst::Result<()> {
@@ -41,7 +41,7 @@ fn main() -> amethyst::Result<()> {
         .with(collitions::CollitionSystem, "CollitionSystem", &[])
         .with(tower::aiming::AimingSystem, "AimingSystem", &[])
         .with_bundle(enemy::MyBundle)?
-        .with_bundle(mouse_system::MyBundle)?
+        //.with_bundle(mouse_system::MyBundle)?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()

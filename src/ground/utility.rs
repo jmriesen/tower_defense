@@ -1,6 +1,5 @@
 use amethyst::{
     prelude::*,
-    window::ScreenDimensions,
     core::{
         math::{Vector3,},
         Transform,
