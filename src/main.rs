@@ -19,6 +19,7 @@ mod movement;
 mod ground;
 mod collitions;
 mod sprites_management;
+mod player;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());

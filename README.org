@@ -8,7 +8,21 @@
     - [X] bullets and enemies both are destroyed on contact.
     - [X] Towers can aim there bullets.
     - [X] Towers have a range.
-  - [ ] money/reasorce system
+  - [X] health
+    - [X] Create component
+    - [X] decrement/destroyed in coalition system
+  - [X] money/reasorce
+    - [X] Create money reasorce with only one u_size.
+    - [X] Killing enemies gives money
+    - [X] Buying a tower cost money
+  - [ ] Introduce lives system
+    - [ ] Modify enemy factory so that it produces more enemies each round.
+      - [ ] create logic to spawn x enemies in N seconds.
+      - [ ] Try out a few different growth curves for enemy population. 
+    - [ ] Create lives component.
+    - [ ] Create escapes destruction system.
+      - Destroys all elements that are off out of bounds.
+      - If it is an enemy deduct from the players lives.
   - [ ] Level loading
   - [ ] Enemies come in waves
     - [ ] waves start after a certain amount of time.

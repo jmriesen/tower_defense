@@ -2,11 +2,15 @@ use amethyst::{
     core::{
         transform::Transform,
     },
-    ecs::{Entities,Join,ReadStorage,System,SystemData},
+    ecs::{Entities,Join,ReadStorage,System,SystemData,WriteStorage,Write},
     derive::SystemDesc,
 };
 use super::tower::Bullet;
-use super::enemy::Enemy;
+use super::enemy::{
+    Enemy,
+    Helth,
+};
+use super::player::Money;
 
 
 
@@ -19,15 +23,23 @@ impl<'s> System<'s> for CollitionSystem{
         ReadStorage<'s, Transform>,
         ReadStorage<'s, Bullet>,
         ReadStorage<'s, Enemy>,
+        WriteStorage<'s, Helth>,
+        Write<'s, Money>,
     );
 
-    fn run(&mut self, (entities, transfroms, bullets, enemys): Self::SystemData) {
+    fn run(&mut self, (entities, transfroms, bullets, enemys, mut helth, mut money): Self::SystemData) {
         let mut to_delete = vec![];
         for (bullet, bullet_trans, _) in (&entities, &transfroms, &bullets).join(){
-            for (enemy, enemy_trans, _) in (&entities, &transfroms, &enemys).join(){
+            for (enemy, enemy_trans, _, mut helth) in (&entities, &transfroms, &enemys, &mut helth).join(){
                 if distance_less_then(enemy_trans,bullet_trans, 32.){
                     to_delete.push(bullet.clone());
-                    to_delete.push(enemy.clone());
+                    let Helth(ph) = &mut helth;
+                    *ph = ph.checked_sub(1).unwrap_or(0);
+                    if *ph == 0{
+                        to_delete.push(enemy.clone());
+                        money.0 +=1;
+                        println!("Money {}",money.0);
+                    }
                 }
 
             }

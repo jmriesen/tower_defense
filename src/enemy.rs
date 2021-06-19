@@ -33,11 +33,19 @@ impl EnemyFactory{
         }
     }
 }
+
 pub struct Enemy;
 
 impl Component for Enemy{
     type Storage = DenseVecStorage<Self>;
 }
+
+pub struct Helth(pub usize);
+
+impl Component for Helth{
+    type Storage = DenseVecStorage<Self>;
+}
+
 pub struct SpawnEvent;
 use super::movement::{
     path::PathFollowing,
@@ -56,6 +64,7 @@ impl SpawnSystem {
         Self { reader }
     }
 }
+
 impl<'s> System<'s> for SpawnSystem{
     type SystemData = (
         Entities<'s>,
@@ -66,10 +75,11 @@ impl<'s> System<'s> for SpawnSystem{
         WriteStorage<'s, PathFollowing>,
         WriteStorage<'s, SpriteRender>,
         WriteStorage<'s, Enemy>,
+        WriteStorage<'s, Helth>,
         ReadExpect<'s, SpriteReasorces<Enemy>>,
     );
 
-    fn run(&mut self, (entities, channel, factories, mut transforms,mut movements, mut path_following, mut sprite_render, mut enemies, enemy_sprite): Self::SystemData) {
+    fn run(&mut self, (entities, channel, factories, mut transforms,mut movements, mut path_following, mut sprite_render, mut enemies, mut helth, enemy_sprite): Self::SystemData) {
         for _event in channel.read(&mut self.reader) {
             //extract all information I will need to build bullets.
             let parts :Vec<EnemyConfig> =
@@ -84,6 +94,7 @@ impl<'s> System<'s> for SpawnSystem{
                     .with(config.location,&mut transforms)
                     .with(config.movement,&mut movements)
                     .with(PathFollowing,&mut path_following)
+                    .with(Helth(5),&mut helth)
                     .with(Enemy,&mut enemies)
                     .build();
             }

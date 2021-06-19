@@ -24,6 +24,7 @@ use super::enemy::{EnemyFactory,Enemy};
 use super::tower::{Tower,Bullet};
 use super::ground::{Ground};
 use super::sprites_management::{SpriteReasorces};
+use super::player::Money;
 
 
 
@@ -33,6 +34,8 @@ pub struct MyState;
 impl SimpleState for MyState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+
+        world.insert(Money(10));
         //TODO This bit is repetitive I wonder if I can write a macro for it?
         let enemy_sprite = SpriteReasorces::<Enemy>::new(world,"enemy");
         world.insert(enemy_sprite);
@@ -99,8 +102,17 @@ impl SimpleState for MyState {
             }
             StateEvent::Input(InputEvent::MouseButtonReleased(_)) => {
                 let mut world = data.world;
-                let transform = get_mouse_position(world);
-                Tower::create(&mut world, transform);
+                let mut money = world.fetch_mut::<Money>();
+                let tower_cost = 5;
+                if money.0 >= tower_cost{
+                    money.0 -= tower_cost;
+                    drop(money);
+                    let transform = get_mouse_position(world);
+                    Tower::create(&mut world, transform);
+                }else{
+                    println!("insufficient funds have {} need {}",money.0, tower_cost)
+                }
+
                 Trans::None
             },
             _  =>Trans::None,
