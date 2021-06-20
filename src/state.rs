@@ -35,7 +35,7 @@ impl SimpleState for MyState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
-        world.insert(Money(10));
+        super::player::set_up_money(world);
         //TODO This bit is repetitive I wonder if I can write a macro for it?
         let enemy_sprite = SpriteReasorces::<Enemy>::new(world,"enemy");
         world.insert(enemy_sprite);
@@ -104,13 +104,13 @@ impl SimpleState for MyState {
                 let mut world = data.world;
                 let mut money = world.fetch_mut::<Money>();
                 let tower_cost = 5;
-                if money.0 >= tower_cost{
-                    money.0 -= tower_cost;
+                if money.amount >= tower_cost{
+                    money.amount -= tower_cost;
                     drop(money);
                     let transform = get_mouse_position(world);
                     Tower::create(&mut world, transform);
                 }else{
-                    println!("insufficient funds have {} need {}",money.0, tower_cost)
+                    println!("insufficient funds have {} need {}",money.amount, tower_cost)
                 }
 
                 Trans::None

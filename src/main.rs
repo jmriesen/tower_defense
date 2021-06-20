@@ -40,6 +40,7 @@ fn main() -> amethyst::Result<()> {
         .with(movement::MovementSystem, "MovementSystem", &[])
         .with(collitions::CollitionSystem, "CollitionSystem", &[])
         .with(tower::aiming::AimingSystem, "AimingSystem", &[])
+        .with(player::MoneyDesplay, "DesplaySystem", &[])
         .with_bundle(enemy::MyBundle)?
         //.with_bundle(mouse_system::MyBundle)?
         .with_bundle(UiBundle::<StringBindings>::new())?

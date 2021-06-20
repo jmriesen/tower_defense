@@ -37,8 +37,7 @@ impl<'s> System<'s> for CollitionSystem{
                     *ph = ph.checked_sub(1).unwrap_or(0);
                     if *ph == 0{
                         to_delete.push(enemy.clone());
-                        money.0 +=1;
-                        println!("Money {}",money.0);
+                        money.amount +=1;
                     }
                 }
 
