@@ -35,10 +35,6 @@ impl<'s> System<'s> for CollitionSystem{
                     to_delete.push(bullet.clone());
                     let Helth(ph) = &mut helth;
                     *ph = ph.checked_sub(1).unwrap_or(0);
-                    if *ph == 0{
-                        to_delete.push(enemy.clone());
-                        money.amount +=1;
-                    }
                 }
 
             }

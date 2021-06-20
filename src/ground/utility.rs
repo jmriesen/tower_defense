@@ -56,4 +56,8 @@ impl Ground{
         (pos.x /TILE_SIZE as f32,pos.y /TILE_SIZE as f32)
     }
 
+    pub fn validate_location(&self,location:&Transform)->bool{
+        let (x,y) = Ground::trans_to_tile(location);
+        0.0<=x&&x<self.colum as f32 &&0.0<=y&&y<self.rows as f32
+    }
 }
