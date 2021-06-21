@@ -20,7 +20,6 @@ mod ground;
 mod collitions;
 mod sprites_management;
 mod player;
-mod death;
 mod remove_off_screen_things;
 
 fn main() -> amethyst::Result<()> {
@@ -42,7 +41,7 @@ fn main() -> amethyst::Result<()> {
         .with(movement::MovementSystem, "MovementSystem", &[])
         .with(collitions::CollitionSystem, "CollitionSystem", &[])
         .with(tower::aiming::AimingSystem, "AimingSystem", &[])
-        .with(death::DeathSystem, "DeathSystem", &[])
+        .with(enemy::DeathSystem, "DeathSystem", &[])
         .with(player::MoneyDesplay, "DesplaySystem", &[])
         .with(remove_off_screen_things::Destry, "cleanOfScreen", &[])
         .with_bundle(enemy::MyBundle)?

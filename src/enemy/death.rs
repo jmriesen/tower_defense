@@ -1,14 +1,14 @@
 use amethyst::{
-    ecs::{Entities,Join,ReadStorage,System,SystemData,WriteStorage,Write},
+    ecs::{Entities,Join,ReadStorage,System,SystemData,Write},
     derive::SystemDesc,
 };
 
-use super::enemy::{
+use super::{
     Enemy,
     Helth,
 };
 
-use super::player::Money;
+use crate::player::Money;
 
 #[derive(SystemDesc)]
 pub struct DeathSystem;
@@ -23,9 +23,9 @@ impl<'s> System<'s> for DeathSystem{
 
     fn run(&mut self, (entities, enemys, helth, mut money): Self::SystemData) {
         for (entity, helth) in (&entities, &helth).join(){
-            if let Helth(0) = helth{
+            if helth.value() ==0 {
                 if let Some(_) = enemys.get(entity){
-                    entities.delete(entity);
+                    let _ = entities.delete(entity);
                     money.amount +=1;
                 }
             }

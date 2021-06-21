@@ -1,9 +1,9 @@
 use amethyst::{
     ecs::{Read,WriteStorage,Entity,System},
-    assets::{AssetStorage, Loader},
-    ui::{Anchor, FontHandle, Interactable, LineMode, TtfFormat, UiText, UiTransform},
+    assets::{Loader},
+    ui::{Anchor, FontHandle, LineMode, TtfFormat, UiText, UiTransform},
 };
-use amethyst::prelude::{Builder, GameData, SimpleState, SimpleTrans, StateData, Trans, World, WorldExt};
+use amethyst::prelude::{Builder, World, WorldExt};
 
 #[derive(Default)]
 pub struct Money{
@@ -55,7 +55,6 @@ impl<'s> System<'s> for MoneyDesplay{
             let lable = text.get_mut(lable).unwrap();
             lable.text = format!("Money ${}",money.amount);
         }
-        let text = text.get(money.lable.unwrap());
     }
 }
 
