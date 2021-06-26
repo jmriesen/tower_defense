@@ -41,5 +41,4 @@ impl Ground{
             None
         }
     }
-
 }

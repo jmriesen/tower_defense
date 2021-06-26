@@ -57,4 +57,3 @@ impl<'s> System<'s> for MoneyDesplay{
         }
     }
 }
-

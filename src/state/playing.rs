@@ -3,48 +3,33 @@ use amethyst::{
     prelude::*,
     shrev::{EventChannel},
     utils::application_root_dir,
-    ecs::{
-        ReadStorage,
-        Join,
-        Read,
-        ReadExpect,
-        WriteStorage,
-    },
-    core::{
-        transform::Transform,
-        math::{Point3},
-    },
-    renderer::{Camera},
-    input::{InputHandler,StringBindings},
-    window::ScreenDimensions,
 };
 
-use super::enemy;
-use super::enemy::{EnemyFactory,Enemy};
-use super::tower::{Tower,Bullet};
-use super::ground::{Ground};
-use super::sprites_management::{SpriteReasorces};
-use super::player::Money;
+use crate::enemy::{EnemyFactory,SpawnEvent};
+use crate::tower::Tower;
+use crate::ground::{Ground};
+use crate::player::{Money, set_up_money};
+
+
+use super::utility::{
+    get_mouse_position,
+    set_up_sprites,
+};
+
 
 
 
 #[derive(Default)]
-pub struct MyState;
+pub struct Playing;
 
-impl SimpleState for MyState {
+impl SimpleState for Playing {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+        set_up_sprites(world);
 
-        super::player::set_up_money(world);
+        set_up_money(world);
         //TODO This bit is repetitive I wonder if I can write a macro for it?
-        let enemy_sprite = SpriteReasorces::<Enemy>::new(world,"enemy");
-        world.insert(enemy_sprite);
-        let tower_sprite = SpriteReasorces::<Tower>::new(world,"tower");
-        world.insert(tower_sprite);
-
-        let bullet_sprite = SpriteReasorces::<Bullet>::new(world,"bullet");
-        world.insert(bullet_sprite);
-        //TODO all the rest of this should be dealt with by a config file.
+                //TODO all the rest of this should be dealt with by a config file.
         /*
         let mut ground = Ground::new(10,10);
         for i in 0..9{
@@ -63,7 +48,6 @@ impl SimpleState for MyState {
         ground.refresh();
         ground.create_tile_map(world);
         ground.create_camera(world);
-
 
         world.insert(ground);
 
@@ -92,8 +76,8 @@ impl SimpleState for MyState {
                 match  action.as_str() {
                     "shoot" => {
                         let world = data.world;
-                        let mut temp = world.fetch_mut::<EventChannel<enemy::SpawnEvent>>();
-                        temp.single_write(enemy::SpawnEvent);
+                        let mut temp = world.fetch_mut::<EventChannel<SpawnEvent>>();
+                        temp.single_write(SpawnEvent);
                     }
                     _ => {},
                 }
@@ -119,26 +103,3 @@ impl SimpleState for MyState {
         }
     }
 }
-fn get_mouse_position(world:&World)->Transform{
-    let (camras,transfroms,input,dimensions):
-    (
-        ReadStorage<Camera>,
-        WriteStorage<Transform>,
-        Read<InputHandler<StringBindings>>,
-        ReadExpect<ScreenDimensions>,
-    ) = world.system_data();
-    let point = {
-        //Only supporting one camra at the moment.
-        let (camra, transform) = (&camras, &transfroms).join().next().unwrap();
-        let (x,y) = input.mouse_position().unwrap();
-        camra.screen_to_world_point(
-            Point3::new(x, y, 1.0),
-            dimensions.diagonal(),
-            transform
-        )
-    };
-    let mut transform = Transform::default();
-    transform.set_translation_xyz(point.x ,point.y,0.);
-    transform
-}
-

@@ -59,7 +59,7 @@ fn main() -> amethyst::Result<()> {
 
         )?;
 
-    let mut game = Application::new(resources, state::MyState::default(), game_data)?;
+    let mut game = Application::new(resources, state::Editing::default(), game_data)?;
     game.run();
 
     Ok(())

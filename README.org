@@ -16,6 +16,13 @@
     - [X] Killing enemies gives money
     - [X] Buying a tower cost money
     - [X] Add Ui element to display Money. 
+  - [-] Level loading
+    - [X] Create state mod and move things into it.
+    - [X] Create a new state for designing levels.
+    - [ ] Create a nice way to save and load from a file.
+  - [ ] Rework the ground mod
+    - [ ] Solve the clunky sub mods.
+    - [ ] Create more tile Types.
   - [ ] Introduce lives system
     - [ ] Modify enemy factory so that it produces more enemies each round.
       - [ ] create logic to spawn x enemies in N seconds.
@@ -24,7 +31,6 @@
     - [ ] Create escapes destruction system.
       - Destroys all elements that are off out of bounds.
       - If it is an enemy deduct from the players lives.
-  - [ ] Level loading
   - [ ] Enemies come in waves
     - [ ] waves start after a certain amount of time.
     - [ ] each successive wave gets harder.
