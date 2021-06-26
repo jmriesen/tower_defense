@@ -12,7 +12,7 @@ pub struct Money{
 }
 pub fn set_up_money(world:&mut World){
     let ui_transform = UiTransform::new(
-        String::from("simple_button"), // id
+        String::from("Money Label"), // id
         Anchor::TopLeft,                // anchor
         Anchor::TopLeft,                // pivot
         0f32,                          // x
@@ -29,7 +29,7 @@ pub fn set_up_money(world:&mut World){
     );
     let ui_text = UiText::new(
         font,                   // font
-        String::from("Simple Button"), // text
+        String::from("Money"), // text
         [1.0, 1.0, 1.0, 0.5],          // color
         31f32,                         // font_size
         LineMode::Single,              // line mode

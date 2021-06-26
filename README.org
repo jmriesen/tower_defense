@@ -11,11 +11,11 @@
   - [X] health
     - [X] Create component
     - [X] decrement/destroyed in coalition system
-  - [-] money/reasorce
+  - [X] money/reasorce
     - [X] Create money reasorce with only one u_size.
     - [X] Killing enemies gives money
     - [X] Buying a tower cost money
-    - [ ] Add Ui element to display Money. 
+    - [X] Add Ui element to display Money. 
   - [ ] Introduce lives system
     - [ ] Modify enemy factory so that it produces more enemies each round.
       - [ ] create logic to spawn x enemies in N seconds.

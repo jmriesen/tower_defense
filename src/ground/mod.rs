@@ -86,8 +86,8 @@ impl Ground{
             speed
         })
     }
-
 }
+
 fn to_usize((x,y):(isize,isize))->(usize,usize){
     (x as usize,y as usize)
 }
