@@ -10,12 +10,12 @@ use amethyst::{
 };
 use super::{
     Ground,
-    tiles::GroundTile,
+    tiles::TileRenderer,
     TILE_SIZE,
 };
 impl Ground{
     pub fn create_tile_map(&self,world:&mut World){
-        let map = TileMap::<GroundTile>::new(
+        let map = TileMap::<TileRenderer>::new(
             Vector3::new(self.colum, self.rows, 1), // The dimensions of the map
             Vector3::new(TILE_SIZE,TILE_SIZE, 1), // The dimensions of each tile
             Some(super::super::sprites_management::load_sheet(world, "ground")),

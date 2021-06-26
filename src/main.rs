@@ -55,7 +55,7 @@ fn main() -> amethyst::Result<()> {
                 )
                 .with_plugin(RenderUi::default())
                 .with_plugin(RenderFlat2D::default())
-                .with_plugin(RenderTiles2D::<ground::tiles::GroundTile>::default())
+                .with_plugin(RenderTiles2D::<ground::tiles::TileRenderer>::default())
 
         )?;
 

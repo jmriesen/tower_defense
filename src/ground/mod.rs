@@ -32,7 +32,6 @@ pub struct Ground{
     //map is always a rectangle.
     map:Vec<Vec<bool>>,
     sink_points:Vec<(usize,usize)>,
-    //cashed value None if invalid.
     #[serde(skip)]
     gradiant_map : Option<Vec<Vec<(isize,isize)>>>,
 }
