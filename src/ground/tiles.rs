@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+#[derive(Deserialize, Serialize, Clone, Copy, PartialEq)]
 pub enum Tile{
     Path,
     Grass,
@@ -22,8 +24,7 @@ mod render{
             let ground = world.fetch::<Ground>();
             //default I want positive y as up, default is down.
             let pos = (coords.x as isize,(ground.colum-1-coords.y) as isize);
-            let index = if *ground.map(pos)? {1} else {2};
-            Some(index)
+            Some(*ground.map(pos.into())? as usize)
         }
     }
 }

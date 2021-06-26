@@ -5,9 +5,11 @@ use amethyst::{
     utils::application_root_dir,
 };
 
+
+use amethyst::core::Transform;
 use crate::enemy::{EnemyFactory,SpawnEvent};
 use crate::tower::Tower;
-use crate::ground::{Ground};
+use crate::ground::{Ground, unit_conversions::*,};
 use crate::player::{Money, set_up_money};
 
 
@@ -44,15 +46,14 @@ impl SimpleState for Playing {
 
         ground.write("ground").unwrap();
         */
-        let mut ground = Ground::load(application_root_dir().unwrap().join("ground.ron")).unwrap();
-        ground.refresh();
+        let ground = Ground::load(application_root_dir().unwrap().join("ground.ron")).unwrap();
         ground.create_tile_map(world);
         ground.create_camera(world);
 
         world.insert(ground);
 
         world.create_entity()
-            .with(Ground::tile_to_trans((4,5)))
+            .with(Transform::from(TilePoint{x:4.,y:5.}))
             .with(EnemyFactory)
             .build();
     }

@@ -46,18 +46,4 @@ impl Ground{
             .with(transform)
             .build();
     }
-    pub fn tile_to_trans((x,y):(u32,u32))->Transform{
-        let mut transform = Transform::default();
-        transform.set_translation_xyz((x * TILE_SIZE) as f32,(y * TILE_SIZE)  as f32,0.);
-        transform
-    }
-    pub fn trans_to_tile(location:&Transform)->(f32,f32){
-        let pos = location.translation();
-        (pos.x /TILE_SIZE as f32,pos.y /TILE_SIZE as f32)
-    }
-
-    pub fn validate_location(&self,location:&Transform)->bool{
-        let (x,y) = Ground::trans_to_tile(location);
-        0.0<=x&&x<self.colum as f32 &&0.0<=y&&y<self.rows as f32
-    }
 }

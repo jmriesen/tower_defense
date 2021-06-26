@@ -5,7 +5,10 @@ use amethyst::{
 };
 
 use crate::enemy::SpawnEvent;
-use crate::ground::{Ground};
+use crate::ground::{
+    Ground,
+    Tile,
+};
 use crate::player::set_up_money;
 
 
@@ -25,12 +28,11 @@ impl SimpleState for Editing{
         set_up_money(world);
         let mut ground = Ground::new(10,10);
         for i in 0..9{
-         *ground.map_mut((i,1)).unwrap() = false;
-         *ground.map_mut((9-i,3)).unwrap() = false;
+         *ground.map_mut((i,1).into()).unwrap() = Tile::Grass;
+         *ground.map_mut((9-i,3).into()).unwrap() = Tile::Grass;
     }
 
-        ground.sink_points_mut().push((0,0));
-        ground.refresh();
+        ground.sink_points.push((0,0).into());
         ground.create_tile_map(world);
         ground.create_camera(world);
 
@@ -68,11 +70,15 @@ impl SimpleState for Editing{
             StateEvent::Input(InputEvent::MouseButtonReleased(_)) => {
                 let world = data.world;
                 let transform = get_mouse_position(world);
-                let (x,y) = Ground::trans_to_tile(&transform);
-                let pos = (x.round() as isize,y.round() as isize);
                 let mut ground = world.fetch_mut::<Ground>();
+                let pos = transform.into();
                 let current = ground.map(pos).unwrap();
-                *ground.map_mut(pos).unwrap() = !current;
+                *ground.map_mut(pos).unwrap() =
+                    match current{
+                        Tile::Grass => Tile::Path,
+                        Tile::Path => Tile::Water,
+                        Tile::Water => Tile::Grass,
+                    };
                 Trans::None
             },
             _  =>Trans::None,

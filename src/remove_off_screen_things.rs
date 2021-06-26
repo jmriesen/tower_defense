@@ -5,7 +5,9 @@ use amethyst::{
 };
 
 
-use super::ground::Ground;
+use super::ground::{
+    Ground,
+};
 #[derive(SystemDesc)]
 pub struct Destry;
 
@@ -18,10 +20,9 @@ impl<'s> System<'s> for Destry{
 
     fn run(&mut self, (entities, transfroms, ground): Self::SystemData) {
         for (entity, transfrom) in (&entities, &transfroms).join(){
-            if !ground.validate_location(&transfrom){
+            if !ground.bounds_check(transfrom.clone().into()){
                 let _ = entities.delete(entity);
             }
         }
-
     }
 }
