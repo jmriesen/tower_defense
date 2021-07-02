@@ -25,8 +25,8 @@ impl GradientMap {
         }
     }
     pub fn get(&self,point:LatticePoint)->Option<(isize,isize)>{
-        let x = usize::try_from(point.x).ok()?;
-        let y = usize::try_from(point.x).ok()?;
+        let _x = usize::try_from(point.x).ok()?;
+        let _y = usize::try_from(point.x).ok()?;
         *self.map.get(point.y as usize)?.get(point.x as usize)?
 
     }

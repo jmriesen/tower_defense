@@ -1,27 +1,25 @@
 use amethyst::{
     input::{is_close_requested, is_key_down, VirtualKeyCode, InputEvent},
     prelude::*,
-    shrev::{EventChannel},
 };
 
-use crate::enemy::SpawnEvent;
+
 use crate::ground::{
     Ground,
     Tile,
 };
-use crate::player::Player;
+
 
 
 use super::utility::{
     get_mouse_position,
-    set_up_sprites,
 };
 
 #[derive(Default)]
 pub struct Editing;
 
 impl SimpleState for Editing{
-    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+    fn on_start(&mut self, _data: StateData<'_, GameData<'_, '_>>) {
     }
 
     fn handle_event(

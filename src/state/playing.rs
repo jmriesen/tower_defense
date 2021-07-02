@@ -2,7 +2,6 @@ use amethyst::{
     input::{is_close_requested, is_key_down, VirtualKeyCode, InputEvent},
     prelude::*,
     shrev::{EventChannel},
-    utils::application_root_dir,
     ui::{Anchor, FontHandle, LineMode, TtfFormat, UiText, UiTransform},
     ecs::{Entities,Read,WriteStorage,Entity,Join,ReadStorage},
 
@@ -10,16 +9,15 @@ use amethyst::{
 };
 
 
-use amethyst::core::Transform;
+
 use crate::enemy::{Enemy,SpawnEvent};
 use crate::tower::Tower;
-use crate::ground::{Ground, unit_conversions::*,};
+
 use crate::player::{Player};
 
 
 use super::utility::{
     get_mouse_position,
-    set_up_sprites,
 };
 
 
