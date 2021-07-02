@@ -3,14 +3,18 @@ use amethyst::{
     prelude::*,
     shrev::{EventChannel},
     utils::application_root_dir,
+    ui::{Anchor, FontHandle, LineMode, TtfFormat, UiText, UiTransform},
+    ecs::{Entities,Read,WriteStorage,Entity,Join,ReadStorage},
+
+    assets::{Loader},
 };
 
 
 use amethyst::core::Transform;
-use crate::enemy::{EnemyFactory,SpawnEvent};
+use crate::enemy::{Enemy,SpawnEvent};
 use crate::tower::Tower;
 use crate::ground::{Ground, unit_conversions::*,};
-use crate::player::{Money, set_up_money};
+use crate::player::{Player};
 
 
 use super::utility::{
@@ -22,40 +26,69 @@ use super::utility::{
 
 
 #[derive(Default)]
-pub struct Playing;
+pub struct Playing{
+    money: Option<Entity>,
+    lives: Option<Entity>,
+}
 
 impl SimpleState for Playing {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
-        set_up_sprites(world);
 
-        set_up_money(world);
-        //TODO This bit is repetitive I wonder if I can write a macro for it?
-                //TODO all the rest of this should be dealt with by a config file.
-        /*
-        let mut ground = Ground::new(10,10);
-        for i in 0..9{
-            *ground.map_mut((i,1)).unwrap() = false;
-            *ground.map_mut((9-i,3)).unwrap() = false;
-        }
+        let font: FontHandle = world.read_resource::<Loader>().load(
+            "fonts/Bangers-Regular.ttf",
+            TtfFormat,
+            (),
+            &world.read_resource(),
+        );
 
-        ground.sink_points_mut().push((0,0));
-        ground.refresh();
-        ground.create_tile_map(world);
-        ground.create_camera(world);
+    let money_transform = UiTransform::new(
+        String::from("Money Label"), // id
+        Anchor::TopLeft,                // anchor
+        Anchor::TopLeft,                // pivot
+        0f32,                          // x
+        0f32,                          // y
+        0f32,                          // z
+        200f32,                        // width
+        30f32,                         // height
+    );
+   let money_text = UiText::new(
+       font.clone(),                   // font
+        String::from("Money"), // text
+        [1.0, 1.0, 1.0, 0.5],          // color
+        31f32,                         // font_size
+        LineMode::Single,              // line mode
+        Anchor::Middle,                // alignment
+    );
+        self.money = Some(world.create_entity()
+                          .with(money_transform)
+                          .with(money_text)
+                          .build());
+        let lives_transform = UiTransform::new(
+            String::from("Money Label"), // id
+            Anchor::TopLeft,                // anchor
+            Anchor::TopLeft,                // pivot
+            0f32,                          // x
+            -30f32,                          // y
+            0f32,                          // z
+            200f32,                        // width
+            30f32,                         // height
+        );
+        let lives_text = UiText::new(
+            font,                   // font
+            String::from("Money"), // text
+            [1.0, 1.0, 1.0, 0.5],          // color
+            31f32,                         // font_size
+            LineMode::Single,              // line mode
+            Anchor::Middle,                // alignment
+        );
+        self.lives= Some(world.create_entity()
+                          .with(lives_transform)
+                          .with(lives_text)
+                          .build());
 
-        ground.write("ground").unwrap();
-        */
-        let ground = Ground::load(application_root_dir().unwrap().join("ground.ron")).unwrap();
-        ground.create_tile_map(world);
-        ground.create_camera(world);
+        world.insert(Player{money:10,lives:5});
 
-        world.insert(ground);
-
-        world.create_entity()
-            .with(Transform::from(TilePoint{x:4.,y:5.}))
-            .with(EnemyFactory)
-            .build();
     }
 
     fn handle_event(
@@ -79,28 +112,75 @@ impl SimpleState for Playing {
                         let world = data.world;
                         let mut temp = world.fetch_mut::<EventChannel<SpawnEvent>>();
                         temp.single_write(SpawnEvent);
+                        Trans::None
                     }
-                    _ => {},
+                    "quit" =>{
+                        Trans::Pop
+                    }
+                    _ => {Trans::None},
                 }
-                Trans::None
 
             }
             StateEvent::Input(InputEvent::MouseButtonReleased(_)) => {
                 let mut world = data.world;
-                let mut money = world.fetch_mut::<Money>();
+                let mut player = world.fetch_mut::<Player>();
                 let tower_cost = 5;
-                if money.amount >= tower_cost{
-                    money.amount -= tower_cost;
-                    drop(money);
+                if player.money>= tower_cost{
+                    player.money-= tower_cost;
+                    drop(player);
                     let transform = get_mouse_position(world);
                     Tower::create(&mut world, transform);
                 }else{
-                    println!("insufficient funds have {} need {}",money.amount, tower_cost)
+                    println!("insufficient funds have {} need {}",player.money, tower_cost)
                 }
 
                 Trans::None
             },
             _  =>Trans::None,
         }
+    }
+    fn fixed_update(&mut self, data: StateData<'_, GameData>) -> SimpleTrans{
+        let world = data.world;
+        let (player,mut text):(
+            Read<Player>,
+            WriteStorage<UiText>
+        ) = world.system_data();
+        if let Some(lable) = self.money{
+            let lable = text.get_mut(lable).unwrap();
+            lable.text = format!("Money ${}",player.money);
+        }
+
+        if let Some(lable) = self.lives{
+            let lable = text.get_mut(lable).unwrap();
+            lable.text = format!("Lives {}",player.lives);
+        }
+        if player.lives == 0{
+            Trans::Pop
+        }else{
+            Trans::None
+        }
+    }
+
+    fn on_stop(&mut self, data: StateData<'_, GameData>){
+        let world = data.world;
+        let (entities,enemies,towers):
+        (
+            Entities,
+            ReadStorage<Enemy>,
+            ReadStorage<Tower>,
+        ) = world.system_data();
+        for (entity, _) in  (&entities, &enemies).join(){
+            let _ = entities.delete(entity);
+        }
+        for (entity, _) in (&entities, &towers).join(){
+            let _ = entities.delete(entity);
+        }
+        if let Some(entity) = self.money{
+            let _ = entities.delete(entity);
+        }
+        if let Some(entity) = self.lives{
+            let _ = entities.delete(entity);
+        }
+
     }
 }

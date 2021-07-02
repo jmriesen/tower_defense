@@ -9,7 +9,7 @@ use crate::ground::{
     Ground,
     Tile,
 };
-use crate::player::set_up_money;
+use crate::player::Player;
 
 
 use super::utility::{
@@ -22,23 +22,6 @@ pub struct Editing;
 
 impl SimpleState for Editing{
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-        let world = data.world;
-        set_up_sprites(world);
-
-        set_up_money(world);
-        let mut ground = Ground::new(10,10);
-        for i in 0..9{
-         *ground.map_mut((i,1).into()).unwrap() = Tile::Grass;
-         *ground.map_mut((9-i,3).into()).unwrap() = Tile::Grass;
-    }
-
-        ground.sink_points.push((0,0).into());
-        ground.create_tile_map(world);
-        ground.create_camera(world);
-
-        ground.write("ground").unwrap();
-
-        world.insert(ground);
     }
 
     fn handle_event(
@@ -58,14 +41,14 @@ impl SimpleState for Editing{
             }
             StateEvent::Input(InputEvent::ActionReleased(action)) => {
                 match  action.as_str() {
-                    "shoot" => {
-                        let world = data.world;
-                        let mut temp = world.fetch_mut::<EventChannel<SpawnEvent>>();
-                        temp.single_write(SpawnEvent);
+                    "play" =>{
+                        Trans::Push(Box::new(super::Playing::default()))
                     }
-                    _ => {},
+                    "quit" =>{
+                        Trans::Pop
+                    }
+                    _ => {Trans::None},
                 }
-                Trans::None
             }
             StateEvent::Input(InputEvent::MouseButtonReleased(_)) => {
                 let world = data.world;

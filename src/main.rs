@@ -42,7 +42,6 @@ fn main() -> amethyst::Result<()> {
         .with(collitions::CollitionSystem, "CollitionSystem", &[])
         .with(tower::aiming::AimingSystem, "AimingSystem", &[])
         .with(enemy::DeathSystem, "DeathSystem", &[])
-        .with(player::MoneyDesplay, "DesplaySystem", &[])
         .with(remove_off_screen_things::Destry, "cleanOfScreen", &[])
         .with_bundle(enemy::MyBundle)?
         //.with_bundle(mouse_system::MyBundle)?
@@ -59,7 +58,8 @@ fn main() -> amethyst::Result<()> {
 
         )?;
 
-    let mut game = Application::new(resources, state::Playing::default(), game_data)?;
+    let state = Box::new(state::Editing::default());
+    let mut game = Application::new(resources, state::LoadLevel::new(state), game_data)?;
     game.run();
 
     Ok(())

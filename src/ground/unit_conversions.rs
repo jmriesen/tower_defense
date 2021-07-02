@@ -9,7 +9,7 @@ pub struct TilePoint{
     pub y: f32,
 }
 
-#[derive(Deserialize, Serialize, Clone, Copy, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Copy, PartialEq, Debug)]
 pub struct LatticePoint{
     pub x: isize,
     pub y: isize,

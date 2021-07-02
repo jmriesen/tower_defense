@@ -6,7 +6,7 @@
         ),
         "move_y": Emulated(
             pos: Key(E),
-            neg: Key(Q),
+            neg: Key(T),
         ),
         "move_z": Emulated(
             pos: Key(S),
@@ -15,5 +15,7 @@
     },
     actions: {
         "shoot": [[Key(Space)]],
+        "quit": [[Key(Q)]],
+        "play": [[Key(P)]],
     },
 )

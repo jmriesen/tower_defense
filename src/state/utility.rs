@@ -1,5 +1,4 @@
-use amethyst::{
-    prelude::*,
+use amethyst::{prelude::*,
     ecs::{
         ReadStorage,
         Join,
