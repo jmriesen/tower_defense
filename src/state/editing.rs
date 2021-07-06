@@ -45,6 +45,13 @@ impl SimpleState for Editing{
                     "quit" =>{
                         Trans::Pop
                     }
+                    "save" =>{
+                        let world = data.world;
+                        let ground = world.fetch::<Ground>();
+                        //TODO this is bad
+                        ground.write("levels/ground.ron").unwrap();
+                        Trans::None
+                    }
                     _ => {Trans::None},
                 }
             }

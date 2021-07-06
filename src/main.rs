@@ -1,3 +1,4 @@
+use structopt::StructOpt;
 use amethyst::{
     core::transform::TransformBundle,
     input::{InputBundle, StringBindings},
@@ -22,7 +23,16 @@ mod sprites_management;
 mod player;
 mod remove_off_screen_things;
 
+
+#[derive(StructOpt)]
+struct Cli{
+    #[structopt(parse(from_os_str))]
+    leval: std::path::PathBuf,
+    #[structopt(short, long)]
+    edit:bool
+}
 fn main() -> amethyst::Result<()> {
+    let args = Cli::from_args();
     amethyst::start_logger(Default::default());
 
     let app_root = application_root_dir()?;
@@ -36,15 +46,7 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(
             InputBundle::<StringBindings>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
-        .with(movement::path::PathFollowingSystem, "pathFollowingSystem", &[])
-        .with(tower::fireing_system::FireingSystem, "FireingSystem", &[])
-        .with(movement::MovementSystem, "MovementSystem", &[])
-        .with(collitions::CollitionSystem, "CollitionSystem", &[])
-        .with(tower::aiming::AimingSystem, "AimingSystem", &[])
-        .with(enemy::DeathSystem, "DeathSystem", &[])
-        .with(remove_off_screen_things::Destry, "cleanOfScreen", &[])
-        .with_bundle(enemy::MyBundle)?
-        //.with_bundle(mouse_system::MyBundle)?
+        .with_bundle(enemy::EnemyBundle)?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
@@ -58,8 +60,13 @@ fn main() -> amethyst::Result<()> {
 
         )?;
 
-    let state = Box::new(state::Editing::default());
-    let mut game = Application::new(resources, state::LoadLevel::new(state), game_data)?;
+    let state:Box<dyn State<_,_>> =
+        if args.edit {
+            Box::new(state::Editing::default())
+        }else{
+            Box::new(state::Playing::default())
+        };
+    let mut game = Application::new(resources, state::LoadLevel::new(args.leval,state), game_data)?;
     game.run();
 
     Ok(())

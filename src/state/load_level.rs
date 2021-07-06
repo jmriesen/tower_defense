@@ -1,19 +1,13 @@
 use amethyst::{
-    input::{is_close_requested, is_key_down, VirtualKeyCode, InputEvent},
     prelude::*,
-    shrev::{EventChannel},
     GameData,
     StateEvent,
-    core::Transform,
+    config,
 };
 
-use crate::enemy::EnemyFactory;
 use crate::ground::{
     Ground,
-    Tile,
-    unit_conversions::*,
 };
-use crate::player::Player;
 
 
 use super::utility::{
@@ -21,11 +15,15 @@ use super::utility::{
 };
 
 pub struct LoadLevel{
+    file_name:std::path::PathBuf,
     next:Option<Box<dyn State<GameData<'static,'static>,StateEvent>>>
 }
 impl LoadLevel{
-    pub fn new(next:Box<dyn State<GameData<'static,'static>,StateEvent>>)->Self{
-        Self{next:Some(next)}
+    pub fn new(file_name:std::path::PathBuf,next:Box<dyn State<GameData<'static,'static>,StateEvent>>)->Self{
+        Self{
+            next:Some(next),
+            file_name
+        }
     }
 }
 
@@ -33,26 +31,32 @@ impl SimpleState for LoadLevel{
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
         set_up_sprites(world);
-//let ground = Ground::load(application_root_dir().unwrap().join("ground.ron")).unwrap();
-        world.insert(Player::default());
-        let mut ground = Ground::new(10,10);
-        for i in 0..9{
-         *ground.map_mut((i,1).into()).unwrap() = Tile::Grass;
-         *ground.map_mut((9-i,3).into()).unwrap() = Tile::Grass;
-    }
+        //TODO I should destroy everything I create.
+        //TODO the following functionality should really live in the ground.
+        let ground = match Ground::load(
+            //application_root_dir().unwrap().join("levels/ground.ron")
+            self.file_name.clone()
 
-        ground.sink_points.push((0,0).into());
+        ){
+            Ok(ground) => ground,
+            Err(config::ConfigError::File(os))=>{
+                if os.kind() == std::io::ErrorKind::NotFound{
+                    Ground::default()
+                }
+                else{
+                    panic!("{:?},",os)
+                }
+            }
+            Err(other) => panic!("{:?}",other),
+        };
+        //let ground = ).unwrap();
+
         ground.create_tile_map(world);
         ground.create_camera(world);
+        ground.create_enemy_factories(world);
 
-        ground.write("ground").unwrap();
 
         world.insert(ground);
-
-        world.create_entity()
-            .with(Transform::from(TilePoint{x:4.,y:5.}))
-            .with(EnemyFactory)
-            .build();
     }
 
 

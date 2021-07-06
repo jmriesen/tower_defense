@@ -25,6 +25,7 @@ pub struct Ground{
     //map is always a rectangle.
     map:Vec<Vec<Tile>>,
     pub sink_points:Vec<LatticePoint>,
+    pub source_points:Vec<LatticePoint>,
 }
 
 impl Ground{
@@ -34,6 +35,7 @@ impl Ground{
             rows,
             map:vec![vec![Tile::Path;colum as usize];rows as usize],
             sink_points: vec![],
+            source_points: vec![],
         }
     }
     pub fn bounds_check(&self,point:LatticePoint)->bool{
@@ -61,3 +63,8 @@ impl Component for Ground {
     type Storage = DenseVecStorage<Self>;
 }
 
+impl Default for Ground{
+    fn default()->Self{
+        Ground::new(10,10)
+    }
+}

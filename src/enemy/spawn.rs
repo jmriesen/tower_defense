@@ -1,6 +1,5 @@
 use super::*;
 use amethyst::{
-    Error,
     shrev::{EventChannel,ReaderId},
     ecs::{Entity}
 };
@@ -73,20 +72,4 @@ impl<'s> System<'s> for SpawnSystem{
     }
 }
 
-#[derive(Debug)]
-pub struct MyBundle;
 
-impl<'a, 'b> SystemBundle<'a, 'b> for MyBundle {
-    fn build(
-        self,
-        world: &mut World,
-        builder: &mut DispatcherBuilder<'a, 'b>,
-    ) -> Result<(), Error> {
-        builder.add(
-            SpawnSystemDesc::default().build(world),
-            "spawnSystem",
-            &[],
-        );
-        Ok(())
-    }
-}

@@ -45,6 +45,15 @@ impl From<Transform> for LatticePoint{
         )
     }
 }
+impl From<LatticePoint> for Transform{
+    fn from(point:LatticePoint)->Self{
+        Transform::from(
+            TilePoint::from(
+                point
+            )
+        )
+    }
+}
 
 impl From<(f32,f32)> for TilePoint{
     fn from((x,y):(f32,f32))->Self{

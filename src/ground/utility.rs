@@ -46,4 +46,14 @@ impl Ground{
             .with(transform)
             .build();
     }
+    pub fn create_enemy_factories(&self,world: &mut World) {
+        use crate::enemy::EnemyFactory;
+        for source in &self.source_points{
+            world.create_entity()
+                .with(Transform::from(*source))
+                .with(EnemyFactory)
+                .build();
+        }
+
+    }
 }

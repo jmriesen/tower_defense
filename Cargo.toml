@@ -5,6 +5,7 @@ authors = ["Jacob Riesen"]
 edition = "2018"
 
 [dependencies]
+structopt = "0.3.13"
 serde = { version = "1.0", features = ["derive"] }
 lexical = "^5.1"
 amethyst = {version = "0.15.2", features = ["no-slow-safety-checks","tiles"]}
