@@ -16,10 +16,10 @@
     - [X] Killing enemies gives money
     - [X] Buying a tower cost money
     - [X] Add Ui element to display Money. 
-  - [-] Level loading
+  - [X] Level loading
     - [X] Create state mod and move things into it.
     - [X] Create a new state for designing levels.
-    - [ ] Create a nice way to save and load from a file.
+    - [X] Create a nice way to save and load from a file.
   - [X] Rework the ground mod
     - [X] Solve the clunky sub mods.
     - [X] Create more tile Types.
