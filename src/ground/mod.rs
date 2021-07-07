@@ -6,6 +6,8 @@ use amethyst::{
             DenseVecStorage
         },
     },
+    prelude::Config,
+    config
 };
 //There are two coords systems. One witch is the global and one that is the tile.
 pub mod tiles;
@@ -15,11 +17,15 @@ pub mod unit_conversions;
 pub use unit_conversions::*;
 
 pub use tiles::Tile;
+pub use std::path::PathBuf;
 
+const LEVEL_FOLDER : &str = "levels";
 //right now any scaling is not going to be done in here.
 
 #[derive(Deserialize, Serialize,)]
 pub struct Ground{
+    #[serde(skip)] 
+    name:String,
     colum:u32,
     rows:u32,
     //map is always a rectangle.
@@ -29,8 +35,9 @@ pub struct Ground{
 }
 
 impl Ground{
-    pub fn new(colum:u32,rows:u32)->Self{
+    pub fn new(name:String,colum:u32,rows:u32)->Self{
         Self{
+            name,
             colum,
             rows,
             map:vec![vec![Tile::Path;colum as usize];rows as usize],
@@ -57,7 +64,31 @@ impl Ground{
             None
         }
     }
-
+    pub fn save(&self){
+        let mut level = PathBuf::from(LEVEL_FOLDER);
+        level.push(self.name.clone());
+        level.set_extension("ron");
+        self.write(level).unwrap();
+    }
+    pub fn read(name:&str)->Self{
+        let mut level = PathBuf::from(LEVEL_FOLDER);
+        level.push(name);
+        level.set_extension("ron");
+        let mut ground = match Ground::load(level.to_str().unwrap()){
+            Ok(ground) => ground,
+            Err(config::ConfigError::File(os))=>{
+                if os.kind() == std::io::ErrorKind::NotFound{
+                    Ground::default()
+                }
+                else{
+                    panic!("{:?},",os)
+                }
+            }
+            Err(other) => panic!("{:?}",other),
+        };
+        ground.name = name.to_string();
+        ground
+    }
 }
 impl Component for Ground {
     type Storage = DenseVecStorage<Self>;
@@ -65,6 +96,6 @@ impl Component for Ground {
 
 impl Default for Ground{
     fn default()->Self{
-        Ground::new(10,10)
+        Ground::new(String::from(""),10,10)
     }
 }

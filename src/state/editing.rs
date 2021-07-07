@@ -48,8 +48,7 @@ impl SimpleState for Editing{
                     "save" =>{
                         let world = data.world;
                         let ground = world.fetch::<Ground>();
-                        //TODO this is bad
-                        ground.write("levels/ground.ron").unwrap();
+                        ground.save();
                         Trans::None
                     }
                     _ => {Trans::None},

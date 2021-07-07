@@ -2,7 +2,6 @@ use amethyst::{
     prelude::*,
     GameData,
     StateEvent,
-    config,
 };
 
 use crate::ground::{
@@ -31,25 +30,7 @@ impl SimpleState for LoadLevel{
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
         set_up_sprites(world);
-        //TODO I should destroy everything I create.
-        //TODO the following functionality should really live in the ground.
-        let ground = match Ground::load(
-            //application_root_dir().unwrap().join("levels/ground.ron")
-            self.file_name.clone()
-
-        ){
-            Ok(ground) => ground,
-            Err(config::ConfigError::File(os))=>{
-                if os.kind() == std::io::ErrorKind::NotFound{
-                    Ground::default()
-                }
-                else{
-                    panic!("{:?},",os)
-                }
-            }
-            Err(other) => panic!("{:?}",other),
-        };
-        //let ground = ).unwrap();
+        let ground = Ground::read(self.file_name.to_str().unwrap());
 
         ground.create_tile_map(world);
         ground.create_camera(world);
