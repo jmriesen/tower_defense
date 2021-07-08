@@ -1,4 +1,9 @@
-use amethyst::ecs::{Component,DenseVecStorage};
+use amethyst::ecs::{
+    Component,
+    DenseVecStorage
+};
+
+#[derive(Component)]
 pub struct Helth(usize);
 impl Helth {
     pub fn new(hp:usize)->Self{
@@ -12,6 +17,3 @@ impl Helth {
     }
 }
 
-impl Component for Helth{
-    type Storage = DenseVecStorage<Self>;
-}

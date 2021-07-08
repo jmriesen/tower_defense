@@ -21,6 +21,7 @@ type EnemyDataStorage<'s> = (
     ReadExpect<'s, SpriteReasorces<Enemy>>,
 );
 
+#[derive(Component)]
 pub struct EnemyFactory{
     stopwatch:Stopwatch,
     command: Option<SpawnEvent>,
@@ -34,10 +35,6 @@ impl Default for EnemyFactory{
         }
     }
 }
-impl Component for EnemyFactory {
-    type Storage = DenseVecStorage<Self>;
-}
-//TODO I need to finish and test this system.
 impl EnemyFactory{
     fn update(&mut self,data:&mut EnemyDataStorage)->Option<Entity>{
         let offspring =

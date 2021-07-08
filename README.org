@@ -28,11 +28,10 @@
     - [X] Create escapes destruction system.
       - Destroys all elements that are off out of bounds.
       - If it is an enemy deduct from the players lives.
-  - [ ] Enemies come in waves
+  - [-] Enemies come in waves
     - [ ] waves start after a certain amount of time.
-    - [ ] each successive wave gets harder.
-    - [ ] Modify enemy factory so that it produces more enemies each round.
-      - [ ] create logic to spawn x enemies in N seconds.
-      - [ ] Try out a few different growth curves for enemy population. 
+    - [X] each successive wave gets harder.
+    - [X] Modify enemy factory so that it produces more enemies each round.
+    - [ ] Try out a few different growth curves for enemy population. 
   - [ ] Multiple enemy types
   - [ ] Multiple tower types

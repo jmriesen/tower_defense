@@ -4,18 +4,17 @@ use amethyst::{
     },
     ecs::{Join,Component,DenseVecStorage,WriteStorage,ReadStorage,System,SystemData},
     derive::SystemDesc,
+
 };
 
 pub mod path;
+#[derive(Component)]
 pub struct Movement {
     pub angle : f32,
     pub speed : f32,
 }
 
 
-impl Component for Movement{
-    type Storage = DenseVecStorage<Self>;
-}
 
 #[derive(SystemDesc)]
 pub struct MovementSystem;

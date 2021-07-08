@@ -5,6 +5,10 @@ use amethyst::{
     ecs::{Entities,Join,ReadStorage},
     ecs::prelude::*,
     core::{ArcThreadPool},
+    assets::{
+        AssetStorage, Handle, Prefab, PrefabData, PrefabLoader, PrefabLoaderSystemDesc,
+        ProgressCounter, RonFormat,
+    },
 };
 
 use core::time::Duration;

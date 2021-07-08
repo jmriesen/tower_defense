@@ -20,12 +20,8 @@ pub use death::DeathSystem;
 pub use spawn::{EnemyFactory,SpawnEvent,SpawnConfig};
 
 
+#[derive(Component)]
 pub struct Enemy;
-
-impl Component for Enemy{
-    type Storage = DenseVecStorage<Self>;
-}
-
 
 #[derive(Debug)]
 pub struct EnemyBundle;
@@ -45,7 +41,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for EnemyBundle {
             "DeathSystem",
             &[],
         );
- 
+
         Ok(())
     }
 }
