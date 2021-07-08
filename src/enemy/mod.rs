@@ -17,7 +17,7 @@ pub mod spawn;
 
 pub use helth::Helth;
 pub use death::DeathSystem;
-pub use spawn::{EnemyFactory,SpawnEvent};
+pub use spawn::{EnemyFactory,SpawnEvent,SpawnConfig};
 
 
 pub struct Enemy;

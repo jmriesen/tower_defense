@@ -7,8 +7,9 @@ use amethyst::{
     core::{ArcThreadPool},
 };
 
+use core::time::Duration;
 
-use crate::enemy::{Enemy,SpawnEvent};
+use crate::enemy::{Enemy,SpawnEvent,SpawnConfig};
 use crate::tower::Tower;
 
 use crate::player::{Player};
@@ -26,6 +27,7 @@ use ui::UI;
 pub struct Playing<'a,'b>{
     ui:Option<UI>,
     dispatcher: Option<Dispatcher<'a, 'b>>,
+    round:usize
 }
 
 impl <'a,'b>SimpleState for Playing<'a,'b> {
@@ -75,7 +77,13 @@ impl <'a,'b>SimpleState for Playing<'a,'b> {
                     "shoot" => {
                         let world = data.world;
                         let mut temp = world.fetch_mut::<EventChannel<SpawnEvent>>();
-                        temp.single_write(SpawnEvent);
+                        self.round+=1;
+                        temp.single_write(
+                            SpawnEvent{
+                                number:self.round*self.round,
+                                spacing :Duration::from_secs(1),
+                                config:SpawnConfig{helth:3*self.round}
+                            });
                         Trans::None
                     }
                     "quit" =>{

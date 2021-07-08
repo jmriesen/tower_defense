@@ -51,7 +51,7 @@ impl Ground{
         for source in &self.source_points{
             world.create_entity()
                 .with(Transform::from(*source))
-                .with(EnemyFactory)
+                .with(EnemyFactory::default())
                 .build();
         }
 

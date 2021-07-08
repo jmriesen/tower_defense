@@ -23,6 +23,9 @@ mod sprites_management;
 mod player;
 mod remove_off_screen_things;
 
+use sprites_management::SpriteReasorces;
+use enemy::Enemy;
+
 
 #[derive(StructOpt)]
 struct Cli{
@@ -66,7 +69,9 @@ fn main() -> amethyst::Result<()> {
         }else{
             Box::new(state::Playing::default())
         };
-    let mut game = Application::new(resources, state::LoadLevel::new(args.leval,state), game_data)?;
+    //let mut game = Application::new(resources, state::LoadLevel::new(args.leval,state), game_data)?;
+    let mut game = Application::build(resources,state::LoadLevel::new(args.leval,state))?
+        .build(game_data)?;
     game.run();
 
     Ok(())

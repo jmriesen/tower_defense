@@ -41,6 +41,7 @@ pub fn set_up_sprites(world:&mut World){
     use crate::sprites_management::{SpriteReasorces};
     use crate::enemy::Enemy;
     use crate::tower::{Tower,Bullet};
+
     let enemy_sprite = SpriteReasorces::<Enemy>::new(world,"enemy");
     world.insert(enemy_sprite);
     let tower_sprite = SpriteReasorces::<Tower>::new(world,"tower");
