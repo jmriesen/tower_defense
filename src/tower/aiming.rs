@@ -9,8 +9,6 @@ use super::Tower;
 use super::super::enemy::Enemy;
 use super::super::ground::TILE_SIZE;
 
-
-
 #[derive(SystemDesc)]
 pub struct AimingSystem;
 
@@ -23,7 +21,6 @@ impl<'s> System<'s> for AimingSystem{
 
     fn run(&mut self, (mut towers, enemys, transfroms): Self::SystemData) {
         for (mut tower, tower_trans) in (&mut towers, &transfroms).join(){
-            //let mut min = None;
             let min = (&enemys, &transfroms)
                 .join()
                 .min_by_key(
@@ -37,7 +34,7 @@ impl<'s> System<'s> for AimingSystem{
 }
 fn check_range<'a,'b>(_tower:&Tower,tower_trans: &Transform,target:Option<(&'a Enemy,&'b Transform)>)->Option<(&'a Enemy,&'b Transform)>{
     let (_enemy, enemy_trans) = target?;
-    if distance_sqared(tower_trans,enemy_trans) < (5.*TILE_SIZE as f32).powf(2.) {
+    if distance_sqared(tower_trans,enemy_trans) < (2.*TILE_SIZE as f32).powf(2.) {
         target
     }else {
        None

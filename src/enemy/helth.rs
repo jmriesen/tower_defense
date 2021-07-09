@@ -1,9 +1,12 @@
-use amethyst::ecs::{
-    Component,
-    DenseVecStorage
+use amethyst::{
+    ecs::{
+        storage::DenseVecStorage,
+        Component,
+    },
 };
+use serde::{Deserialize, Serialize};
 
-#[derive(Component)]
+#[derive(Clone, Copy, Component, Debug, Default, Deserialize, Serialize)]
 pub struct Helth(usize);
 impl Helth {
     pub fn new(hp:usize)->Self{

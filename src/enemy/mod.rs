@@ -5,7 +5,7 @@ use amethyst::{
         transform::Transform,
         bundle::SystemBundle,
     },
-    ecs::{ReadExpect,Join,Component,DenseVecStorage,ReadStorage,DispatcherBuilder,Read,Entities,WriteStorage,System,SystemData},
+    ecs::{ReadExpect,Join,Component,DenseVecStorage,DispatcherBuilder,Read,Entities,WriteStorage,System,SystemData},
     derive::SystemDesc,
     Error,
 };

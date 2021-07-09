@@ -23,9 +23,6 @@ mod sprites_management;
 mod player;
 mod remove_off_screen_things;
 
-use sprites_management::SpriteReasorces;
-use enemy::Enemy;
-
 
 #[derive(StructOpt)]
 struct Cli{

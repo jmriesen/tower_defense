@@ -5,10 +5,6 @@ use amethyst::{
     ecs::{Entities,Join,ReadStorage},
     ecs::prelude::*,
     core::{ArcThreadPool},
-    assets::{
-        AssetStorage, Handle, Prefab, PrefabData, PrefabLoader, PrefabLoaderSystemDesc,
-        ProgressCounter, RonFormat,
-    },
 };
 
 use core::time::Duration;
@@ -58,6 +54,7 @@ impl <'a,'b>SimpleState for Playing<'a,'b> {
             .build();
         dispatcher.setup(world);
 
+
         self.dispatcher = Some(dispatcher);
     }
 
@@ -84,9 +81,9 @@ impl <'a,'b>SimpleState for Playing<'a,'b> {
                         self.round+=1;
                         temp.single_write(
                             SpawnEvent{
-                                number:self.round*self.round,
+                                number:(self.round as f32).powf(1.5).ceil() as usize,
                                 spacing :Duration::from_secs(1),
-                                config:SpawnConfig{helth:3*self.round}
+                                config:SpawnConfig{helth:(self.round as f32).powf(1.2).ceil() as usize}
                             });
                         Trans::None
                     }
