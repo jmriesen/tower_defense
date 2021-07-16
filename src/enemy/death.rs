@@ -23,11 +23,9 @@ impl<'s> System<'s> for DeathSystem{
 
     fn run(&mut self, (entities, enemys, helth, mut player): Self::SystemData) {
         for (entity, helth) in (&entities, &helth).join(){
-            if helth.value() ==0 {
-                if let Some(_) = enemys.get(entity){
-                    let _ = entities.delete(entity);
-                    player.money+=1;
-                }
+            if helth.value() == 0 && enemys.get(entity).is_some(){
+                let _ = entities.delete(entity);
+                player.money+=1;
             }
         }
 

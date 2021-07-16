@@ -28,7 +28,7 @@ impl<'s> System<'s> for CollitionSystem{
         for (bullet, bullet_trans, _) in (&entities, &transfroms, &bullets).join(){
             for (_enemy, enemy_trans, _, helth) in (&entities, &transfroms, &enemys, &mut helth).join(){
                 if distance_less_then(enemy_trans,bullet_trans, 32.){
-                    to_delete.push(bullet.clone());
+                    to_delete.push(bullet);
                     helth.take_damage(1);
                 }
 

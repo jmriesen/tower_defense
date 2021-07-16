@@ -24,7 +24,7 @@ impl<'s> System<'s> for Destry{
         for (entity, transfrom, enemy) in (&entities, &transfroms,enemys.maybe()).join(){
             if !ground.bounds_check(transfrom.clone().into()){
                 if enemy.is_some(){
-                    player.lives = player.lives.checked_sub(1).unwrap_or(0);
+                    player.lives = player.lives.saturating_sub(1);
                 }
                 let _ = entities.delete(entity);
 

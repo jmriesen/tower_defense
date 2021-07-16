@@ -4,12 +4,12 @@ use amethyst::{
     ecs::{Entities,Read,WriteStorage,Entity},
     assets::{Loader},
 };
-pub struct UI {
+pub struct Ui {
     money: Entity,
     lives: Entity,
 }
 use crate::player::Player;
-impl UI{
+impl Ui{
     pub fn new(world:&mut World)->Self{
                 let font: FontHandle = world.read_resource::<Loader>().load(
             "fonts/Bangers-Regular.ttf",
@@ -62,7 +62,7 @@ impl UI{
                           .with(lives_transform)
                           .with(lives_text)
                           .build();
-        UI{money,lives}
+        Ui{money,lives}
     }
     pub fn update(&self,world: &mut World){
         let (player,mut text):(

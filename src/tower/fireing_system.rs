@@ -19,6 +19,7 @@ use super::super::movement::Movement;
 #[derive(SystemDesc)]
 pub struct FireingSystem ;
 
+
 impl<'s> System<'s> for FireingSystem{
     type SystemData = (
         Entities<'s>,

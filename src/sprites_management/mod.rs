@@ -1,8 +1,15 @@
+use serde::{Serialize, Deserialize};
 use amethyst::{
     assets::{AssetStorage, Loader,Handle},
     prelude::*,
     renderer::{ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
+    derive::PrefabData,
+    ecs::Entity,
+    assets::{PrefabData, ProgressCounter},
+    error::Error,
+    core::transform::Transform,
 };
+
 
 use std::marker::PhantomData;
 
@@ -22,7 +29,26 @@ impl <T>SpriteReasorces<T> {
         self.sprites[index].clone()
     }
 }
+#[derive(Debug, Deserialize, Serialize, PrefabData,Default,Clone)]
+pub struct Test{
+    test:Transform,
+}
 
+/*
+pub  fn test_config(world: &mut World,file_name:&str) -> Test {
+    let texture_handle = {
+        let loader = world.read_resource::<Loader>();
+        let texture_storage = world.read_resource::<AssetStorage<Prefab<Test>>>();
+        loader.load(
+            format!("test.ron"),
+            RonFormat,
+            (),
+            &texture_storage,
+        )
+    };
+    world.write_resource::<AssetStorage<Prefab<Test>>>().get_mut(&texture_handle).as_mut().unwrap().data_or_default(0).clone()
+}
+*/
 
 
 pub  fn load_sheet(world: &mut World,file_name:&str) -> Handle<SpriteSheet> {

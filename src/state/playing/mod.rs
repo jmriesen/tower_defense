@@ -7,9 +7,8 @@ use amethyst::{
     core::{ArcThreadPool},
 };
 
-use core::time::Duration;
 
-use crate::enemy::{Enemy,SpawnEvent,SpawnConfig};
+use crate::enemy::{Enemy,SpawnEvent};
 use crate::tower::Tower;
 
 use crate::player::{Player};
@@ -21,19 +20,23 @@ use super::utility::{
 
 
 mod ui;
-use ui::UI;
+use ui::Ui;
+mod round;
+use round::Round;
 
 #[derive(Default)]
 pub struct Playing<'a,'b>{
-    ui:Option<UI>,
+    ui:Option<Ui>,
     dispatcher: Option<Dispatcher<'a, 'b>>,
-    round:usize
+    round:Round,
 }
 
 impl <'a,'b>SimpleState for Playing<'a,'b> {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let mut world = data.world;
-        self.ui = Some(UI::new(&mut world));
+
+
+        self.ui = Some(Ui::new(&mut world));
 
 
         world.insert(Player{money:10,lives:5});
@@ -46,10 +49,10 @@ impl <'a,'b>SimpleState for Playing<'a,'b> {
         dispatcher_builder.add(crate::collitions::CollitionSystem, "CollitionSystem", &[]);
         dispatcher_builder.add(crate::remove_off_screen_things::Destry, "cleanOfScreen", &[]);
         /*crate::enemy::EnemyBundle
-            .build(&mut world, &mut dispatcher_builder)
-            .expect("Failed to register PongSystemsBundle");
+        .build(&mut world, &mut dispatcher_builder)
+        .expect("Failed to register PongSystemsBundle");
          */
-            let mut dispatcher = dispatcher_builder
+        let mut dispatcher = dispatcher_builder
             .with_pool((*world.read_resource::<ArcThreadPool>()).clone())
             .build();
         dispatcher.setup(world);
@@ -78,13 +81,7 @@ impl <'a,'b>SimpleState for Playing<'a,'b> {
                     "shoot" => {
                         let world = data.world;
                         let mut temp = world.fetch_mut::<EventChannel<SpawnEvent>>();
-                        self.round+=1;
-                        temp.single_write(
-                            SpawnEvent{
-                                number:(self.round as f32).powf(1.5).ceil() as usize,
-                                spacing :Duration::from_secs(1),
-                                config:SpawnConfig{helth:(self.round as f32).powf(1.2).ceil() as usize}
-                            });
+                        temp.single_write(self.round.advance());
                         Trans::None
                     }
                     "quit" =>{
@@ -151,5 +148,5 @@ impl <'a,'b>SimpleState for Playing<'a,'b> {
         for (entity, _) in (&entities, &towers).join(){
             let _ = entities.delete(entity);
         }
-   }
+    }
 }
