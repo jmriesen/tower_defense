@@ -32,7 +32,7 @@
     - [ ] waves start after a certain amount of time.
     - [X] each successive wave gets harder.
     - [X] Modify enemy factory so that it produces more enemies each round.
-    - [ ] Try out a few different growth curves for enemy population.
   - [X] Figure out how use assist to control balancing
   - [ ] Multiple enemy types
   - [ ] Multiple tower types
+  - [ ] Balance game

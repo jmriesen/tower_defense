@@ -31,7 +31,10 @@ pub struct EnemyFactory{
 impl EnemyFactory{
     fn update(&mut self,data:&mut EnemyDataStorage)->Option<Entity>{
         let SpawnEvent{mut number,spacing,health} = self.command?;
-        if number != 0 && self.stopwatch.elapsed()>spacing{
+        if number != 0 &&
+            (self.stopwatch == Stopwatch::Waiting ||
+             self.stopwatch.elapsed()>spacing)
+        {
             number-=1;
             self.command =
                 if number != 0{
@@ -49,7 +52,6 @@ impl EnemyFactory{
 
     fn set(&mut self,command:SpawnEvent){
         self.stopwatch.reset();
-        self.stopwatch.start();
         self.command = Some(command);
     }
     fn spawn(&self,health:usize,(entities, movements, path_following, sprite_render, enemies, helth, enemy_sprite):&mut EnemyDataStorage)->Entity{
