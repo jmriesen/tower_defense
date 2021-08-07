@@ -28,11 +28,13 @@
     - [X] Create escapes destruction system.
       - Destroys all elements that are off out of bounds.
       - If it is an enemy deduct from the players lives.
-  - [-] Enemies come in waves
-    - [ ] waves start after a certain amount of time.
+  - [X] Enemies come in waves
+    - [X] waves start after a certain amount of time.
     - [X] each successive wave gets harder.
     - [X] Modify enemy factory so that it produces more enemies each round.
   - [X] Figure out how use assist to control balancing
   - [ ] Multiple enemy types
   - [ ] Multiple tower types
-  - [ ] Balance game
+  - [-] Balance game
+    - [X] add config files added.
+    - [ ]  do the balancing.

@@ -5,7 +5,7 @@ use amethyst::{
     ecs::{Join,WriteStorage,ReadStorage,System,SystemData},
     derive::SystemDesc,
 };
-use super::Tower;
+use super::BulletLaunching;
 use super::super::enemy::Enemy;
 use super::super::ground::TILE_SIZE;
 
@@ -14,7 +14,7 @@ pub struct AimingSystem;
 
 impl<'s> System<'s> for AimingSystem{
     type SystemData = (
-        WriteStorage<'s, Tower>,
+        WriteStorage<'s, BulletLaunching>,
         ReadStorage<'s, Enemy>,
         ReadStorage<'s, Transform>,
     );
@@ -32,7 +32,7 @@ impl<'s> System<'s> for AimingSystem{
         }
     }
 }
-fn check_range<'a,'b>(_tower:&Tower,tower_trans: &Transform,target:Option<(&'a Enemy,&'b Transform)>)->Option<(&'a Enemy,&'b Transform)>{
+fn check_range<'a,'b>(_tower:&BulletLaunching,tower_trans: &Transform,target:Option<(&'a Enemy,&'b Transform)>)->Option<(&'a Enemy,&'b Transform)>{
     let (_enemy, enemy_trans) = target?;
     if distance_sqared(tower_trans,enemy_trans) < (2.*TILE_SIZE as f32).powf(2.) {
         target
@@ -40,7 +40,7 @@ fn check_range<'a,'b>(_tower:&Tower,tower_trans: &Transform,target:Option<(&'a E
        None
     }
 }
-fn calculate_angle(_tower:&Tower,tower_trans: &Transform,target:Option<(&Enemy,&Transform)>)->Option<f32>{
+fn calculate_angle(_tower:&BulletLaunching,tower_trans: &Transform,target:Option<(&Enemy,&Transform)>)->Option<f32>{
     let (_enemy, enemy_trans) = target?;
     let enemy_pos = enemy_trans.translation();
     let tower_pos = tower_trans.translation();

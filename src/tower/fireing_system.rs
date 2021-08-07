@@ -9,7 +9,7 @@ use amethyst::{
 };
 use super::{
     TurretState,
-    Tower,
+    BulletLaunching,
     Bullet
 };
 
@@ -23,7 +23,7 @@ pub struct FireingSystem ;
 impl<'s> System<'s> for FireingSystem{
     type SystemData = (
         Entities<'s>,
-        WriteStorage<'s, Tower>,
+        WriteStorage<'s, BulletLaunching>,
         WriteStorage<'s, Transform>,
         WriteStorage<'s, Movement>,
         WriteStorage<'s, SpriteRender>,
@@ -38,14 +38,23 @@ impl<'s> System<'s> for FireingSystem{
             tower.state = match tower.state {
                 TurretState::Ready =>{
                     if let Some(angle) = tower.angle{
-                        let transform = transforms.get(id).unwrap().clone();
-                        entities
-                            .build_entity()
-                            .with(sprite.get(0),&mut sprite_render)
-                            .with(transform,&mut  transforms)
-                            .with(Movement{speed:10.,angle},&mut movements)
-                            .with(Bullet,&mut bullets)
-                            .build();
+                        for i in 0..tower.numb_of_bullets{
+                            let offset = match tower.numb_of_bullets{
+                                1|0 => 0.0,
+                                _ => {
+                                    let delta_angle = tower.spred_angle/(tower.numb_of_bullets-1) as f32;
+                                    -tower.spred_angle/2.0 + delta_angle*i as f32
+                                }
+                            };
+                            let transform = transforms.get(id).unwrap().clone();
+                            entities
+                                .build_entity()
+                                .with(sprite.get(0),&mut sprite_render)
+                                .with(transform,&mut  transforms)
+                                .with(Movement{speed:10.,angle:angle+offset},&mut movements)
+                                .with(Bullet,&mut bullets)
+                                .build();
+                        }
                         TurretState::CoolingDown(tower.reload_time)
                     }else{
                         TurretState::Ready

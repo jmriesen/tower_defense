@@ -40,11 +40,11 @@ pub fn get_mouse_position(world:&World)->Transform{
 pub fn set_up_sprites(world:&mut World){
     use crate::sprites_management::{SpriteReasorces};
     use crate::enemy::Enemy;
-    use crate::tower::{Tower,Bullet};
+    use crate::tower::{BulletLaunching,Bullet};
 
     let enemy_sprite = SpriteReasorces::<Enemy>::new(world,"enemy");
     world.insert(enemy_sprite);
-    let tower_sprite = SpriteReasorces::<Tower>::new(world,"tower");
+    let tower_sprite = SpriteReasorces::<BulletLaunching>::new(world,"tower");
     world.insert(tower_sprite);
 
     let bullet_sprite = SpriteReasorces::<Bullet>::new(world,"bullet");

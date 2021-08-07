@@ -8,34 +8,42 @@ use amethyst::{
 };
 
 use super::sprites_management::{SpriteReasorces};
+
 pub enum TurretState{
     Ready,
     CoolingDown(Duration),
 }
 
-pub struct Tower{
+pub struct BulletLaunching{
     pub reload_time:Duration,
     pub state:TurretState,
     pub angle:Option<f32>,
+    pub numb_of_bullets: usize,
+    pub spred_angle:f32,
 }
+// Aria of affect
 
-impl Tower{
+
+
+impl BulletLaunching{
     pub fn new(reload_time:Duration)->Self{
-        Tower{
+        BulletLaunching{
             reload_time,
             state:TurretState::Ready,
             angle : None,
+            numb_of_bullets:3,
+            spred_angle : std::f32::consts::PI/8.0
         }
     }
 
     pub fn create(world:&mut World,transform:Transform){
         let sprite = {
-            let sprites = world.fetch::<SpriteReasorces<Tower>>();
+            let sprites = world.fetch::<SpriteReasorces<BulletLaunching>>();
             sprites.get(0)
         };
         world.create_entity()
             .with(transform)
-            .with(Tower::new(Duration::new(1, 0)))
+            .with(BulletLaunching::new(Duration::new(1, 0)))
             .with(sprite)
             .build();
     }

@@ -3,12 +3,16 @@ use core::time::Duration;
 use crate::enemy::{SpawnEvent};
 
 use serde::{Serialize, Deserialize};
-use amethyst::prelude::Config;
+use amethyst::{
+    prelude::Config,
+};
+
 #[derive(Deserialize, Serialize,)]
 pub struct Round{
     round:usize,
     number_grouth_rate:f32,
     health_grouth_rate:f32,
+    pub time_between_rounds:Duration,
 }
 
 impl Round{
