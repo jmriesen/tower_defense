@@ -1,24 +1,23 @@
 use amethyst::{
-    prelude::*,
-    renderer::{SpriteRender},
-    core::{
-        transform::Transform,
-        bundle::SystemBundle,
-    },
-    ecs::{ReadExpect,Join,Component,DenseVecStorage,DispatcherBuilder,Read,Entities,WriteStorage,System,SystemData},
+    core::{bundle::SystemBundle, transform::Transform},
     derive::SystemDesc,
+    ecs::{
+        Component, DenseVecStorage, DispatcherBuilder, Entities, Join, Read, ReadExpect, System,
+        SystemData, WriteStorage,
+    },
+    prelude::*,
+    renderer::SpriteRender,
     Error,
 };
 
 use super::sprites_management::SpriteReasorces;
-pub mod helth;
 pub mod death;
+pub mod helth;
 pub mod spawn;
 
-pub use helth::Helth;
 pub use death::DeathSystem;
-pub use spawn::{EnemyFactory,SpawnEvent};
-
+pub use helth::Helth;
+pub use spawn::{EnemyFactory, SpawnEvent};
 
 #[derive(Component)]
 pub struct Enemy;
@@ -36,11 +35,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for EnemyBundle {
             "spawnSystem",
             &[],
         );
-        builder.add(
-            death::DeathSystem.build(world),
-            "DeathSystem",
-            &[],
-        );
+        builder.add(death::DeathSystem.build(world), "DeathSystem", &[]);
 
         Ok(())
     }
