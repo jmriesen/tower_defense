@@ -1,6 +1,8 @@
 pub mod aiming;
 mod components;
 pub mod fireing_system;
+#[cfg(test)]
+mod test_bullet_launching;
 use crate::movement::Movement;
 use amethyst::{core::transform::Transform, prelude::*};
 use std::time::Duration;
@@ -22,13 +24,13 @@ pub struct BulletLaunching {
 // Aria of affect
 
 impl BulletLaunching {
-    pub fn new(reload_time: Duration) -> Self {
+    pub fn new(reload_time: Duration, numb_of_bullets: usize, spred_angle: f32) -> Self {
         BulletLaunching {
             reload_time,
             state: TurretState::Ready,
             angle: None,
-            numb_of_bullets: 3,
-            spred_angle: std::f32::consts::PI / 8.0,
+            numb_of_bullets,
+            spred_angle,
         }
     }
 
@@ -40,7 +42,11 @@ impl BulletLaunching {
         world
             .create_entity()
             .with(transform)
-            .with(BulletLaunching::new(Duration::new(1, 0)))
+            .with(BulletLaunching::new(
+                Duration::new(1, 0),
+                3,
+                std::f32::consts::PI / 8.0,
+            ))
             .with(sprite)
             .build();
     }
