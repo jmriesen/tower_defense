@@ -1,5 +1,5 @@
 #[derive(Default)]
-pub struct Player{
-    pub money:usize,
-    pub lives:usize,
+pub struct Player {
+    pub money: usize,
+    pub lives: usize,
 }

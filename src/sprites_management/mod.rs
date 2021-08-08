@@ -1,37 +1,36 @@
-use serde::{Serialize, Deserialize};
 use amethyst::{
-    assets::{AssetStorage, Loader,Handle},
-    prelude::*,
-    renderer::{ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
+    assets::{AssetStorage, Handle, Loader},
+    assets::{PrefabData, ProgressCounter},
+    core::transform::Transform,
     derive::PrefabData,
     ecs::Entity,
-    assets::{PrefabData, ProgressCounter},
     error::Error,
-    core::transform::Transform,
+    prelude::*,
+    renderer::{ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
 };
-
+use serde::{Deserialize, Serialize};
 
 use std::marker::PhantomData;
 
 pub struct SpriteReasorces<T> {
-    sprites:Vec<SpriteRender>,
+    sprites: Vec<SpriteRender>,
     phantom: PhantomData<T>,
 }
 
-impl <T>SpriteReasorces<T> {
-    pub fn new(world: &mut World,sprite:&str)->Self{
-        Self{
-            sprites:load_sprites(world,sprite),
-            phantom:PhantomData
+impl<T> SpriteReasorces<T> {
+    pub fn new(world: &mut World, sprite: &str) -> Self {
+        Self {
+            sprites: load_sprites(world, sprite),
+            phantom: PhantomData,
         }
     }
-    pub fn get(&self,index:usize)->SpriteRender{
+    pub fn get(&self, index: usize) -> SpriteRender {
         self.sprites[index].clone()
     }
 }
-#[derive(Debug, Deserialize, Serialize, PrefabData,Default,Clone)]
-pub struct Test{
-    test:Transform,
+#[derive(Debug, Deserialize, Serialize, PrefabData, Default, Clone)]
+pub struct Test {
+    test: Transform,
 }
 
 /*
@@ -50,13 +49,12 @@ pub  fn test_config(world: &mut World,file_name:&str) -> Test {
 }
 */
 
-
-pub  fn load_sheet(world: &mut World,file_name:&str) -> Handle<SpriteSheet> {
+pub fn load_sheet(world: &mut World, file_name: &str) -> Handle<SpriteSheet> {
     let texture_handle = {
         let loader = world.read_resource::<Loader>();
         let texture_storage = world.read_resource::<AssetStorage<Texture>>();
         loader.load(
-            format!("sprites/{}.png",file_name),
+            format!("sprites/{}.png", file_name),
             ImageFormat::default(),
             (),
             &texture_storage,
@@ -66,14 +64,13 @@ pub  fn load_sheet(world: &mut World,file_name:&str) -> Handle<SpriteSheet> {
     let loader = world.read_resource::<Loader>();
     let sheet_storage = world.read_resource::<AssetStorage<SpriteSheet>>();
     loader.load(
-        format!("sprites/{}.ron",file_name),
+        format!("sprites/{}.ron", file_name),
         SpriteSheetFormat(texture_handle),
         (),
         &sheet_storage,
     )
-
 }
-fn load_sprites(world: &mut World,sprite:&str) -> Vec<SpriteRender> {
+fn load_sprites(world: &mut World, sprite: &str) -> Vec<SpriteRender> {
     let sheet_handle = load_sheet(world, sprite);
     (0..1)
         .map(|i| SpriteRender {

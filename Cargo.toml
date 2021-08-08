@@ -7,13 +7,16 @@ edition = "2018"
 [dependencies]
 structopt = "0.3.13"
 serde = { version = "1.0", features = ["derive"] }
-lexical = "^5.1"
 amethyst = {version = "0.15.3", features = ["no-slow-safety-checks","tiles"]}
 log = { version = "0.4.8", features = ["serde"] }
 specs-derive = "0.4.1"
+[dependencies.lexical-core]
+#optional = true
+version = ">= 0.6, < 0.8"
 
 [features]
 default = ["metal"]
 empty = ["amethyst/empty"]
 metal = ["amethyst/metal"]
 vulkan = ["amethyst/vulkan"]
+

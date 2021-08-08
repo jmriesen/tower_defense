@@ -41,28 +41,14 @@ impl<'s> System<'s> for FireingSystem {
         for (id, mut tower) in (&entities, &mut towers).join() {
             tower.state = match tower.state {
                 TurretState::Ready => {
-                    if let Some(angle) = tower.angle {
-                        for i in 0..tower.numb_of_bullets {
-                            let offset = match tower.numb_of_bullets {
-                                1 | 0 => 0.0,
-                                _ => {
-                                    let delta_angle =
-                                        tower.spred_angle / (tower.numb_of_bullets - 1) as f32;
-                                    -tower.spred_angle / 2.0 + delta_angle * i as f32
-                                }
-                            };
+                    if let Some(trajectories) = tower.calculate_launch_trajectories() {
+                        for movement in trajectories {
                             let transform = transforms.get(id).unwrap().clone();
                             entities
                                 .build_entity()
                                 .with(sprite.get(0), &mut sprite_render)
                                 .with(transform, &mut transforms)
-                                .with(
-                                    Movement {
-                                        speed: 10.,
-                                        angle: angle + offset,
-                                    },
-                                    &mut movements,
-                                )
+                                .with(movement, &mut movements)
                                 .with(Bullet, &mut bullets)
                                 .build();
                         }
@@ -82,7 +68,7 @@ impl<'s> System<'s> for FireingSystem {
         }
 
         // Set muzzle flash
-        for (id, tower, mut sprite) in (&entities, &towers, &mut sprite_render).join() {
+        for (tower, mut sprite) in (&towers, &mut sprite_render).join() {
             if let TurretState::CoolingDown(time_left) = tower.state {
                 if tower.reload_time - time_left < Duration::from_millis(50) {
                     sprite.sprite_number = 1

@@ -62,8 +62,8 @@ impl EnemyFactory {
         health: usize,
         (entities, movements, path_following, sprite_render, enemies, helth, enemy_sprite):&mut EnemyDataStorage,
     ) -> Entity {
-
-        entities.build_entity()
+        entities
+            .build_entity()
             .with(enemy_sprite.get(0), sprite_render)
             .with(
                 Movement {

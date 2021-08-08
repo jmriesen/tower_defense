@@ -1,6 +1,7 @@
 pub mod aiming;
 mod components;
 pub mod fireing_system;
+use crate::movement::Movement;
 use amethyst::{core::transform::Transform, prelude::*};
 use std::time::Duration;
 
@@ -42,6 +43,27 @@ impl BulletLaunching {
             .with(BulletLaunching::new(Duration::new(1, 0)))
             .with(sprite)
             .build();
+    }
+    fn calculate_launch_trajectories(&self) -> Option<Vec<Movement>> {
+        // If there are n bullets then there are n-1 gaps between bullets.
+        // Note there is a divide by zero issue if n = 1 so we handle that separately.
+        let (spred_angle, delta_angle) = match self.numb_of_bullets {
+            1 | 0 => (0., 0.),
+            _ => (
+                self.spred_angle,
+                self.spred_angle / (self.numb_of_bullets - 1) as f32,
+            ),
+        };
+        let angle = self.angle?;
+        Some(
+            (0..self.numb_of_bullets)
+                .map(|i| -spred_angle / 2.0 + delta_angle * i as f32)
+                .map(|offset| Movement {
+                    speed: 10.,
+                    angle: angle + offset,
+                })
+                .collect(),
+        )
     }
 }
 

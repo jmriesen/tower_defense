@@ -45,7 +45,6 @@ impl Ui {
             .with(money_text)
             .build();
 
-
         let lives_transform = UiTransform::new(
             String::from("Money Label"), // id
             Anchor::TopLeft,             // anchor

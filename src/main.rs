@@ -32,7 +32,6 @@ struct Cli {
 }
 
 fn main() -> amethyst::Result<()> {
-
     let args = Cli::from_args();
     amethyst::start_logger(Default::default());
 
@@ -47,8 +46,7 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new())?
         // For reading key bindings to events
         .with_bundle(
-            InputBundle::<StringBindings>::new()
-                .with_bindings_from_file(&key_bindings_path)?,
+            InputBundle::<StringBindings>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
         .with_bundle(enemy::EnemyBundle)?
         // Allows for printing text to the screen
@@ -65,14 +63,12 @@ fn main() -> amethyst::Result<()> {
                 .with_plugin(RenderTiles2D::<ground::tiles::TileRenderer>::default()),
         )?;
 
-
     // States for state machine
     let state: Box<dyn State<_, _>> = if args.edit {
         Box::new(state::Editing::default())
     } else {
         Box::new(state::Playing::default())
     };
-
 
     let mut game = Application::build(resources, state::LoadLevel::new(args.leval, state))?
         .build(game_data)?;

@@ -1857,25 +1857,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8e0d09e60c187a6d0a3fa418aec8587c6a4ae9de872f6126f2134f319b5ed10d"
 dependencies = [
  "cfg-if 0.1.10",
- "lexical-core 0.4.6",
+ "lexical-core 0.4.8",
  "rustc_version 0.2.3",
 ]
 
 [[package]]
-name = "lexical"
-version = "5.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a11b9b772d42a9cf7ff6742d4695054070432742b19cecea07e7c4eca8173d25"
-dependencies = [
- "cfg-if 1.0.0",
- "lexical-core 0.7.5",
-]
-
-[[package]]
 name = "lexical-core"
-version = "0.4.6"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2304bccb228c4b020f3a4835d247df0a02a7c4686098d4167762cfbbe4c5cb14"
+checksum = "34449d00c5d4066537f4dc72320b18e3aa421e8e92669250eecd664c618fefce"
 dependencies = [
  "arrayvec 0.4.12",
  "cfg-if 0.1.10",
@@ -1886,9 +1876,9 @@ dependencies = [
 
 [[package]]
 name = "lexical-core"
-version = "0.7.5"
+version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "21f866863575d0e1d654fbeeabdc927292fdf862873dc3c96c6f753357e13374"
+checksum = "6607c62aa161d23d17a9072cc5da0be67cdfc89d3afb1e8d9c842bebc2525ffe"
 dependencies = [
  "arrayvec 0.5.2",
  "bitflags",
@@ -3884,7 +3874,7 @@ name = "tower-defiance-experiment "
 version = "0.2.0"
 dependencies = [
  "amethyst",
- "lexical 5.2.1",
+ "lexical-core 0.7.6",
  "log",
  "serde",
  "specs-derive",
@@ -4126,7 +4116,7 @@ version = "6.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2486d70e5d40dec6d541a69c88b730a41315d3fa82529f7180a07778a47a343"
 dependencies = [
- "lexical 2.2.2",
+ "lexical",
 ]
 
 [[package]]
